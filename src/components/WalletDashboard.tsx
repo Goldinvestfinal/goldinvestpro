@@ -27,7 +27,7 @@ const mockTransactions = [
 ];
 
 export const WalletDashboard = () => {
-  const [isRealWallet, setIsRealWallet] = useState(false);
+  const [isRealWallet, setIsRealWallet] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const currentBalance = isRealWallet ? 0 : 10000;
 
