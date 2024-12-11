@@ -21,6 +21,8 @@ import {
   Star,
   Bitcoin,
   Coins,
+  Menu,
+  X,
 } from "lucide-react";
 
 const mockChartData = [
@@ -43,11 +45,26 @@ const SidebarItem = ({ icon: Icon, label }: { icon: any; label: string }) => (
 export const WalletDashboard = () => {
   const [isDemoMode, setIsDemoMode] = useState(true);
   const [timeRange, setTimeRange] = useState("Day");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <div className="flex min-h-screen bg-black text-white">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={toggleSidebar}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 text-white hover:bg-white/10 rounded-lg"
+      >
+        {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
       {/* Sidebar */}
-      <aside className="w-64 border-r border-white/10 p-4 space-y-8">
+      <aside
+        className={`${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 fixed lg:relative w-64 h-full border-r border-white/10 p-4 space-y-8 bg-black transition-transform duration-300 z-40`}
+      >
         <div className="flex items-center gap-2 px-4 py-2">
           <div className="w-8 h-8 bg-purple-600 rounded-full" />
           <span className="text-xl font-semibold">Safepark</span>
@@ -75,10 +92,18 @@ export const WalletDashboard = () => {
         </div>
       </aside>
 
+      {/* Overlay for mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+
       {/* Main Content */}
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 lg:p-8 w-full lg:ml-0 overflow-x-hidden">
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 mt-12 lg:mt-0">
           <Card className="bg-zinc-900/50 border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
               <DollarSign className="h-5 w-5" />
@@ -97,9 +122,9 @@ export const WalletDashboard = () => {
 
         {/* Balance Overview */}
         <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
             <h2 className="text-2xl">Total balance</h2>
-            <div className="flex items-center gap-2 text-green-400 bg-green-400/10 px-3 py-1 rounded-full">
+            <div className="flex items-center gap-2 text-green-400 bg-green-400/10 px-3 py-1 rounded-full text-sm">
               <span>10%</span>
               <span>+21,427.29</span>
             </div>
@@ -108,10 +133,10 @@ export const WalletDashboard = () => {
         </div>
 
         {/* Chart */}
-        <Card className="bg-zinc-900/50 border-white/10 p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <Card className="bg-zinc-900/50 border-white/10 p-4 lg:p-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h3 className="text-lg">Balance</h3>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-2">
               {["Day", "Week", "Month", "Year", "All"].map((range) => (
                 <button
                   key={range}
