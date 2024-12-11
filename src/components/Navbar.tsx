@@ -15,6 +15,7 @@ export const Navbar = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
+            <Link to="/shop" className="text-gray-700 hover:text-primary transition-colors">Shop</Link>
             <a href="#features" className="text-gray-700 hover:text-primary transition-colors">Features</a>
             <Link to="/wallet" className="text-gray-700 hover:text-primary transition-colors">Wallet</Link>
             <a href="#testimonials" className="text-gray-700 hover:text-primary transition-colors">Testimonials</a>
@@ -32,6 +33,7 @@ export const Navbar = () => {
         {isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              <Link to="/shop" className="block px-3 py-2 text-gray-700 hover:text-primary transition-colors">Shop</Link>
               <a href="#features" className="block px-3 py-2 text-gray-700 hover:text-primary transition-colors">Features</a>
               <Link to="/wallet" className="block px-3 py-2 text-gray-700 hover:text-primary transition-colors">Wallet</Link>
               <a href="#testimonials" className="block px-3 py-2 text-gray-700 hover:text-primary transition-colors">Testimonials</a>
