@@ -8,6 +8,10 @@ export const Footer = () => {
           <div>
             <h3 className="text-white font-bold text-lg mb-4">GoldInvest</h3>
             <p className="text-sm">Your trusted partner in gold investment since 2024.</p>
+            <div className="mt-4 space-y-1">
+              <p className="text-sm">+49 1521 0755401</p>
+              <p className="text-sm">+49 1521 0840824</p>
+            </div>
           </div>
           
           <div>
