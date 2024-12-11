@@ -3,6 +3,22 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
   LineChart,
   Line,
   XAxis,
@@ -23,6 +39,10 @@ import {
   Coins,
   Menu,
   X,
+  HelpCircle,
+  Shield,
+  FileText,
+  Mail,
 } from "lucide-react";
 
 const mockChartData = [
@@ -35,6 +55,27 @@ const mockChartData = [
   { time: "15:00", value: 200000 },
 ];
 
+const mockTransactions = [
+  {
+    date: "2024-03-11",
+    type: "Deposit",
+    amount: 500,
+    status: "Completed",
+  },
+  {
+    date: "2024-03-10",
+    type: "Withdrawal",
+    amount: 200,
+    status: "Pending",
+  },
+  {
+    date: "2024-03-09",
+    type: "Deposit",
+    amount: 1000,
+    status: "Completed",
+  },
+];
+
 const SidebarItem = ({ icon: Icon, label }: { icon: any; label: string }) => (
   <button className="w-full flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
     <Icon className="h-5 w-5" />
@@ -43,11 +84,12 @@ const SidebarItem = ({ icon: Icon, label }: { icon: any; label: string }) => (
 );
 
 export const WalletDashboard = () => {
-  const [isDemoMode, setIsDemoMode] = useState(true);
-  const [timeRange, setTimeRange] = useState("Day");
+  const [isRealWallet, setIsRealWallet] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [timeRange, setTimeRange] = useState("Day");
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const currentBalance = isRealWallet ? 0 : 10000;
 
   return (
     <div className="flex min-h-screen bg-black text-white">
@@ -77,12 +119,13 @@ export const WalletDashboard = () => {
 
         <div>
           <div className="flex items-center justify-between px-4 mb-2">
-            <span className="text-gray-400">Favorite</span>
-            <button className="text-gray-400 hover:text-white">+</button>
+            <span className="text-gray-400">Quick Links</span>
           </div>
           <div className="space-y-1">
-            <SidebarItem icon={Bitcoin} label="BTC" />
-            <SidebarItem icon={Coins} label="ETH" />
+            <SidebarItem icon={HelpCircle} label="FAQs" />
+            <SidebarItem icon={Shield} label="Security" />
+            <SidebarItem icon={FileText} label="Terms" />
+            <SidebarItem icon={Mail} label="Contact" />
           </div>
         </div>
       </aside>
@@ -97,40 +140,108 @@ export const WalletDashboard = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-4 lg:p-8 w-full lg:ml-0 overflow-x-hidden">
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 mt-12 lg:mt-0">
-          <Card className="bg-zinc-900/50 border-white/10 p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <DollarSign className="h-5 w-5" />
-              <h3 className="text-lg">Buy / Sell</h3>
+        {/* Wallet Overview */}
+        <div className="mb-8 mt-12 lg:mt-0">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            <div>
+              <h2 className="text-2xl mb-2">Wallet Overview</h2>
+              <p className="text-gray-400">Manage your investments effortlessly</p>
             </div>
-            <p className="text-gray-400">Buy and sell with robust providers</p>
-          </Card>
-          <Card className="bg-zinc-900/50 border-white/10 p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <Repeat className="h-5 w-5" />
-              <h3 className="text-lg">Swap</h3>
-            </div>
-            <p className="text-gray-400">Crypto to crypto conversion</p>
-          </Card>
-        </div>
-
-        {/* Balance Overview */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
-            <h2 className="text-2xl">Total balance</h2>
-            <div className="flex items-center gap-2 text-green-400 bg-green-400/10 px-3 py-1 rounded-full text-sm">
-              <span>10%</span>
-              <span>+21,427.29</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">
+                {isRealWallet ? "Real Wallet" : "Demo Wallet"}
+              </span>
+              <Switch
+                checked={isRealWallet}
+                onCheckedChange={setIsRealWallet}
+              />
             </div>
           </div>
-          <h1 className="text-4xl font-bold mb-8">$214,272.90</h1>
+
+          <Card className="bg-zinc-900/50 border-white/10 p-6 mb-6">
+            <h3 className="text-lg mb-2">Current Balance</h3>
+            <h1 className="text-4xl font-bold">${currentBalance.toLocaleString()}</h1>
+          </Card>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button className="w-full" variant="outline">
+                  <DollarSign className="mr-2" /> Deposit Funds
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Deposit Funds</SheetTitle>
+                  <SheetDescription>
+                    Add funds to your wallet. Minimum deposit: $300
+                  </SheetDescription>
+                </SheetHeader>
+                {/* Add deposit form here */}
+              </SheetContent>
+            </Sheet>
+
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button className="w-full" variant="outline">
+                  <Download className="mr-2" /> Withdraw Funds
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Withdraw Funds</SheetTitle>
+                  <SheetDescription>
+                    Withdraw your funds weekly, monthly, or yearly
+                  </SheetDescription>
+                </SheetHeader>
+                {/* Add withdrawal form here */}
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
+
+        {/* Transaction History */}
+        <Card className="bg-zinc-900/50 border-white/10 p-6 mb-8">
+          <h3 className="text-lg mb-4">Transaction History</h3>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mockTransactions.map((transaction, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{transaction.date}</TableCell>
+                    <TableCell>{transaction.type}</TableCell>
+                    <TableCell>${transaction.amount}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          transaction.status === "Completed"
+                            ? "bg-green-500/20 text-green-500"
+                            : "bg-yellow-500/20 text-yellow-500"
+                        }`}
+                      >
+                        {transaction.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </Card>
 
         {/* Chart */}
         <Card className="bg-zinc-900/50 border-white/10 p-4 lg:p-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <h3 className="text-lg">Balance</h3>
+            <h3 className="text-lg">Balance History</h3>
             <div className="flex flex-wrap gap-2">
               {["Day", "Week", "Month", "Year", "All"].map((range) => (
                 <button
@@ -188,11 +299,16 @@ export const WalletDashboard = () => {
           </div>
         </Card>
 
-        {/* Demo Mode Toggle */}
-        <div className="flex items-center justify-end gap-2">
-          <span className="text-sm text-gray-400">Demo Mode</span>
-          <Switch checked={isDemoMode} onCheckedChange={setIsDemoMode} />
-        </div>
+        {/* Footer */}
+        <footer className="border-t border-white/10 pt-8 pb-4">
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
+            <a href="#" className="hover:text-white">Privacy Policy</a>
+            <span>•</span>
+            <a href="#" className="hover:text-white">Terms of Service</a>
+            <span>•</span>
+            <a href="#" className="hover:text-white">Contact Us</a>
+          </div>
+        </footer>
       </main>
     </div>
   );
