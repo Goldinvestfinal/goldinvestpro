@@ -15,7 +15,7 @@ interface SidebarItemProps {
 }
 
 const SidebarItem = ({ icon: Icon, label }: SidebarItemProps) => (
-  <button className="w-full flex items-center gap-3 px-4 py-2 text-purple-300 hover:text-purple-100 hover:bg-purple-800/20 rounded-lg transition-colors">
+  <button className="w-full flex items-center gap-3 px-4 py-2 text-amber-400/80 hover:text-amber-400 hover:bg-amber-900/20 rounded-lg transition-colors">
     <Icon className="h-5 w-5" />
     <span>{label}</span>
   </button>
@@ -33,7 +33,7 @@ export const Sidebar = () => {
 
       <div>
         <div className="flex items-center justify-between px-4 mb-2">
-          <span className="text-purple-300">Quick Links</span>
+          <span className="text-amber-400/80">Quick Links</span>
         </div>
         <div className="space-y-1">
           <SidebarItem icon={HelpCircle} label="FAQs" />

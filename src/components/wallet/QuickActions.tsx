@@ -15,16 +15,16 @@ export const QuickActions = () => {
       <Sheet>
         <SheetTrigger asChild>
           <Button 
-            className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-none" 
+            className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white border-none" 
             variant="outline"
           >
             <DollarSign className="mr-2" /> Deposit Funds
           </Button>
         </SheetTrigger>
-        <SheetContent>
+        <SheetContent className="bg-black border-amber-900/20">
           <SheetHeader>
-            <SheetTitle>Deposit Funds</SheetTitle>
-            <SheetDescription>Add funds to your wallet. Minimum deposit: $300</SheetDescription>
+            <SheetTitle className="text-amber-400">Deposit Funds</SheetTitle>
+            <SheetDescription className="text-amber-400/80">Add funds to your wallet. Minimum deposit: $300</SheetDescription>
           </SheetHeader>
         </SheetContent>
       </Sheet>
@@ -32,16 +32,16 @@ export const QuickActions = () => {
       <Sheet>
         <SheetTrigger asChild>
           <Button 
-            className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-none" 
+            className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white border-none" 
             variant="outline"
           >
             <Download className="mr-2" /> Withdraw Funds
           </Button>
         </SheetTrigger>
-        <SheetContent>
+        <SheetContent className="bg-black border-amber-900/20">
           <SheetHeader>
-            <SheetTitle>Withdraw Funds</SheetTitle>
-            <SheetDescription>
+            <SheetTitle className="text-amber-400">Withdraw Funds</SheetTitle>
+            <SheetDescription className="text-amber-400/80">
               Withdraw your funds weekly, monthly, or yearly
             </SheetDescription>
           </SheetHeader>
