@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -28,13 +42,23 @@ export const Navbar = () => {
             >
               Shop
             </Link>
-            <Link 
-              to="/wallet" 
-              className={`${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}
-            >
-              Wallet
-            </Link>
-            <Button className="bg-gold hover:bg-gold-dark text-black">Get Started</Button>
+            {isAuthenticated && (
+              <Link 
+                to="/wallet" 
+                className={`${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}
+              >
+                Wallet
+              </Link>
+            )}
+            {isAuthenticated ? (
+              <Button onClick={handleLogout} className="bg-gold hover:bg-gold-dark text-black">
+                Logout
+              </Button>
+            ) : (
+              <Button onClick={() => navigate("/auth")} className="bg-gold hover:bg-gold-dark text-black">
+                Login
+              </Button>
+            )}
           </div>
 
           <div className="md:hidden flex items-center">
@@ -53,13 +77,29 @@ export const Navbar = () => {
               >
                 Shop
               </Link>
-              <Link 
-                to="/wallet" 
-                className={`block px-3 py-2 ${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}
-              >
-                Wallet
-              </Link>
-              <Button className="w-full bg-gold hover:bg-gold-dark text-black mt-4">Get Started</Button>
+              {isAuthenticated && (
+                <Link 
+                  to="/wallet" 
+                  className={`block px-3 py-2 ${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}
+                >
+                  Wallet
+                </Link>
+              )}
+              {isAuthenticated ? (
+                <Button 
+                  onClick={handleLogout}
+                  className="w-full bg-gold hover:bg-gold-dark text-black mt-4"
+                >
+                  Logout
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => navigate("/auth")}
+                  className="w-full bg-gold hover:bg-gold-dark text-black mt-4"
+                >
+                  Login
+                </Button>
+              )}
             </div>
           </div>
         )}

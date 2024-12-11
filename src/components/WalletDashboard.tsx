@@ -1,32 +1,65 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { WalletHeader } from "./wallet/WalletHeader";
 import { QuickActions } from "./wallet/QuickActions";
 import { TransactionHistory } from "./wallet/TransactionHistory";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
-const mockTransactions = [
-  {
-    date: "2024-03-11",
-    type: "Deposit",
-    amount: 500,
-    status: "Completed",
-  },
-  {
-    date: "2024-03-10",
-    type: "Withdrawal",
-    amount: 200,
-    status: "Pending",
-  },
-  {
-    date: "2024-03-09",
-    type: "Deposit",
-    amount: 1000,
-    status: "Completed",
-  },
-];
+interface Wallet {
+  id: string;
+  balance: number;
+  is_demo: boolean;
+}
+
+interface Transaction {
+  id: string;
+  type: string;
+  amount: number;
+  status: string;
+  created_at: string;
+}
+
+const fetchWallets = async () => {
+  const { data, error } = await supabase
+    .from("wallets")
+    .select("*");
+
+  if (error) throw error;
+  return data;
+};
+
+const fetchTransactions = async (walletId: string) => {
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("*")
+    .eq("wallet_id", walletId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+};
 
 export const WalletDashboard = () => {
   const [isRealWallet, setIsRealWallet] = useState(true);
-  const currentBalance = isRealWallet ? 0 : 10000;
+  const [currentWallet, setCurrentWallet] = useState<Wallet | null>(null);
+
+  const { data: wallets } = useQuery({
+    queryKey: ["wallets"],
+    queryFn: fetchWallets,
+  });
+
+  const { data: transactions } = useQuery({
+    queryKey: ["transactions", currentWallet?.id],
+    queryFn: () => currentWallet ? fetchTransactions(currentWallet.id) : Promise.resolve([]),
+    enabled: !!currentWallet,
+  });
+
+  useEffect(() => {
+    if (wallets) {
+      const wallet = wallets.find(w => w.is_demo !== isRealWallet);
+      setCurrentWallet(wallet || null);
+    }
+  }, [wallets, isRealWallet]);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -34,10 +67,10 @@ export const WalletDashboard = () => {
         <WalletHeader
           isRealWallet={isRealWallet}
           setIsRealWallet={setIsRealWallet}
-          currentBalance={currentBalance}
+          currentBalance={currentWallet?.balance || 0}
         />
         <QuickActions />
-        <TransactionHistory transactions={mockTransactions} />
+        <TransactionHistory transactions={transactions || []} />
       </main>
     </div>
   );
