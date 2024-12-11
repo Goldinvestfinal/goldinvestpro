@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -36,71 +37,80 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Create a new QueryClient instance
-const queryClient = new QueryClient();
+// Create a new QueryClient instance outside of the component
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // Main App component
-function App() {
+const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <div className="flex flex-col min-h-screen">
-            <div className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route
-                  path="/wallet"
-                  element={
-                    <ProtectedRoute>
-                      <Wallet />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/wallet/accounts"
-                  element={
-                    <ProtectedRoute>
-                      <WalletAccounts />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/wallet/send"
-                  element={
-                    <ProtectedRoute>
-                      <WalletSend />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/wallet/receive"
-                  element={
-                    <ProtectedRoute>
-                      <WalletReceive />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/wallet/trade"
-                  element={
-                    <ProtectedRoute>
-                      <WalletTrade />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <div className="flex flex-col min-h-screen">
+              <div className="flex-grow">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route
+                    path="/wallet"
+                    element={
+                      <ProtectedRoute>
+                        <Wallet />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/wallet/accounts"
+                    element={
+                      <ProtectedRoute>
+                        <WalletAccounts />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/wallet/send"
+                    element={
+                      <ProtectedRoute>
+                        <WalletSend />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/wallet/receive"
+                    element={
+                      <ProtectedRoute>
+                        <WalletReceive />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/wallet/trade"
+                    element={
+                      <ProtectedRoute>
+                        <WalletTrade />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Routes>
+              </div>
+              <Footer />
             </div>
-            <Footer />
-          </div>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
-}
+};
 
 export default App;
