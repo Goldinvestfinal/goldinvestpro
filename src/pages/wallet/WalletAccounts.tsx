@@ -1,6 +1,7 @@
 import { WalletHeader } from "@/components/wallet/WalletHeader";
 import { QuickActions } from "@/components/wallet/QuickActions";
 import { TransactionHistory } from "@/components/wallet/TransactionHistory";
+import { WalletNavigation } from "@/components/wallet/WalletNavigation";
 import { useState } from "react";
 
 const WalletAccounts = () => {
@@ -35,6 +36,7 @@ const WalletAccounts = () => {
         setIsRealWallet={setIsRealWallet}
         currentBalance={currentBalance}
       />
+      <WalletNavigation />
       <QuickActions />
       <TransactionHistory transactions={mockTransactions} />
     </div>
