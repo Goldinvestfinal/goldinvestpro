@@ -1,4 +1,13 @@
-import { Wallet, Send, Download, DollarSign } from "lucide-react";
+import {
+  Wallet,
+  Send,
+  Download,
+  DollarSign,
+  HelpCircle,
+  Shield,
+  FileText,
+  Mail,
+} from "lucide-react";
 
 interface SidebarItemProps {
   icon: any;
@@ -6,10 +15,10 @@ interface SidebarItemProps {
 }
 
 const SidebarItem = ({ icon: Icon, label }: SidebarItemProps) => (
-  <div className="w-full flex items-center gap-3 px-4 py-3 text-amber-400/80">
+  <button className="w-full flex items-center gap-3 px-4 py-3 text-amber-400/80 hover:text-amber-400 hover:bg-amber-900/20 rounded-lg transition-colors">
     <Icon className="h-5 w-5" />
     <span className="font-medium">{label}</span>
-  </div>
+  </button>
 );
 
 export const Sidebar = () => {
