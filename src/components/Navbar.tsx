@@ -17,10 +17,7 @@ export const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="text-xl font-bold text-gold">
-              <div className="flex items-center gap-2">
-                <img src="/lovable-uploads/0a372b40-b9d7-4537-a616-a01f4c0e7d86.png" alt="GoldInvest Logo" className="h-8 w-8" />
-                GOLDINVEST
-              </div>
+              GOLDINVEST
             </Link>
           </div>
           
