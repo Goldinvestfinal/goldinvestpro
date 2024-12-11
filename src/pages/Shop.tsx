@@ -47,11 +47,7 @@ const Shop = () => {
             <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="aspect-square relative overflow-hidden rounded-t-lg bg-black">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
-                  />
+                  <img src={product.image} alt={product.name} className="object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
                 </div>
               </CardHeader>
               <CardContent>
@@ -60,12 +56,7 @@ const Shop = () => {
                 <p className="text-2xl font-bold text-primary">${product.price}</p>
               </CardContent>
               <CardFooter>
-                <Button 
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" 
-                  onClick={() => navigate("/wallet")}
-                >
-                  Invest Now
-                </Button>
+                <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => navigate("/wallet")}>Invest Now</Button>
               </CardFooter>
             </Card>
           ))}
