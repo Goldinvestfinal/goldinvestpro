@@ -65,11 +65,6 @@ export const WalletDashboard = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 fixed lg:relative w-64 h-full border-r border-white/10 p-4 space-y-8 bg-black transition-transform duration-300 z-40`}
       >
-        <div className="flex items-center gap-2 px-4 py-2">
-          <div className="w-8 h-8 bg-purple-600 rounded-full" />
-          <span className="text-xl font-semibold">Safepark</span>
-        </div>
-
         <div className="space-y-1">
           <SidebarItem icon={LayoutDashboard} label="Portfolio" />
           <SidebarItem icon={Wallet} label="Accounts" />
