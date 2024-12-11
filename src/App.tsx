@@ -15,8 +15,6 @@ import WalletReceive from "./pages/wallet/WalletReceive";
 import WalletTrade from "./pages/wallet/WalletTrade";
 import { Footer } from "./components/Footer";
 
-const queryClient = new QueryClient();
-
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -38,65 +36,71 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="flex flex-col min-h-screen">
-          <div className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route
-                path="/wallet"
-                element={
-                  <ProtectedRoute>
-                    <Wallet />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/wallet/accounts"
-                element={
-                  <ProtectedRoute>
-                    <WalletAccounts />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/wallet/send"
-                element={
-                  <ProtectedRoute>
-                    <WalletSend />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/wallet/receive"
-                element={
-                  <ProtectedRoute>
-                    <WalletReceive />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/wallet/trade"
-                element={
-                  <ProtectedRoute>
-                    <WalletTrade />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
+// Create a new QueryClient instance
+const queryClient = new QueryClient();
+
+// Main App component
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="flex flex-col min-h-screen">
+            <div className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route
+                  path="/wallet"
+                  element={
+                    <ProtectedRoute>
+                      <Wallet />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/wallet/accounts"
+                  element={
+                    <ProtectedRoute>
+                      <WalletAccounts />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/wallet/send"
+                  element={
+                    <ProtectedRoute>
+                      <WalletSend />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/wallet/receive"
+                  element={
+                    <ProtectedRoute>
+                      <WalletReceive />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/wallet/trade"
+                  element={
+                    <ProtectedRoute>
+                      <WalletTrade />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
