@@ -35,18 +35,6 @@ export const Sidebar = () => {
           <SidebarItem icon={DollarSign} label="Buy / Sell" />
         </div>
       </div>
-
-      <div className="flex flex-col gap-2">
-        <h2 className="px-4 text-sm font-semibold text-amber-400/60 uppercase tracking-wider">
-          Quick Links
-        </h2>
-        <div className="flex flex-col gap-1">
-          <SidebarItem icon={HelpCircle} label="FAQs" />
-          <SidebarItem icon={Shield} label="Security" />
-          <SidebarItem icon={FileText} label="Terms" />
-          <SidebarItem icon={Mail} label="Contact" />
-        </div>
-      </div>
     </div>
   );
 };
