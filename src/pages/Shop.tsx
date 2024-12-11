@@ -5,25 +5,32 @@ import { useNavigate } from "react-router-dom";
 const products = [
   {
     id: 1,
-    name: "1oz Gold Britannia",
-    price: 2000,
-    image: "/lovable-uploads/0a372b40-b9d7-4537-a616-a01f4c0e7d86.png",
-    description: "The Royal Mint's flagship gold bullion coin",
+    name: "Premium Gold Nugget Collection",
+    price: 3250,
+    image: "/lovable-uploads/041c2f1c-3578-49a1-84d1-79c7f1ec8180.png",
+    description: "A stunning collection of natural gold nuggets, each piece showcasing unique crystalline structures and pure golden hues. Perfect for collectors and investors.",
   },
   {
     id: 2,
-    name: "Gold Phoenix Bar",
-    price: 1950,
-    image: "/lovable-uploads/3dc2def8-f864-48d0-ba0d-c1a5a4a593df.png",
-    description: "Limited edition gold bar featuring a majestic phoenix design",
+    name: "Large Natural Gold Specimen",
+    price: 4890,
+    image: "/lovable-uploads/08553672-042d-4e87-a372-c4af3b0ab22e.png",
+    description: "An exceptional large-scale natural gold nugget featuring intricate surface patterns and impressive weight. A rare find for serious collectors.",
   },
   {
     id: 3,
-    name: "PAMP Gold Bar",
-    price: 1900,
-    image: "/lovable-uploads/16fcc8de-a86a-41b7-907f-0946c7ee17bd.png",
-    description: "Swiss-made premium gold bar with Lady Fortuna design",
+    name: "Hand-Selected Gold Nugget",
+    price: 3975,
+    image: "/lovable-uploads/2a92cb7d-8a8b-4a4a-9927-3abb7d3fcb90.png",
+    description: "A premium hand-selected gold nugget with remarkable texture and natural formation. Each piece tells a unique story of its geological journey.",
   },
+  {
+    id: 4,
+    name: "Crystalline Gold Formation",
+    price: 4200,
+    image: "/lovable-uploads/724a4372-941a-4c72-ac41-721e32d1553b.png",
+    description: "A spectacular crystalline gold formation showcasing nature's artistry. Features unique cavities and structural patterns that collectors prize.",
+  }
 ];
 
 const Shop = () => {
@@ -33,19 +40,19 @@ const Shop = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900">Gold Investment Products</h1>
-          <p className="mt-4 text-lg text-gray-600">Start investing from just $300</p>
+          <h1 className="text-4xl font-bold text-gray-900">Natural Gold Nuggets</h1>
+          <p className="mt-4 text-lg text-gray-600">Rare and unique specimens for collectors and investors</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
           {products.map((product) => (
             <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="aspect-square relative overflow-hidden rounded-t-lg">
+                <div className="aspect-square relative overflow-hidden rounded-t-lg bg-black">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="object-cover w-full h-full"
+                    className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
                   />
                 </div>
               </CardHeader>
@@ -56,7 +63,7 @@ const Shop = () => {
               </CardContent>
               <CardFooter>
                 <Button 
-                  className="w-full" 
+                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" 
                   onClick={() => navigate("/wallet")}
                 >
                   Invest Now
