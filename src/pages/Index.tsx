@@ -11,8 +11,8 @@ const Index = () => {
       <div className="relative">
         <Navbar />
         <MainHero />
-        <GoldFeatures />
         <ProductShowcase />
+        <GoldFeatures />
         <GoldGuide />
       </div>
     </div>
