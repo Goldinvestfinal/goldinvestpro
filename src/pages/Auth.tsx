@@ -1,50 +1,72 @@
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 
-const AuthPage = () => {
+const Auth = () => {
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/wallet");
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN") {
+        // Check if user is admin
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", session?.user?.id)
+          .single();
+
+        if (profile?.is_admin) {
+          setIsAdmin(true);
+        } else {
+          navigate("/wallet");
+        }
       }
+      setLoading(false);
     });
   }, [navigate]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isAdmin) {
+    return (
+      <div className="container mx-auto p-6">
+        <AdminDashboard />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <h1 className="text-3xl font-bold text-amber-400 mb-8 text-center">GOLDINVEST</h1>
-        <div className="bg-gradient-to-br from-amber-900/20 to-amber-800/10 border border-amber-900/20 p-6 rounded-lg backdrop-blur-sm">
-          <Auth
-            supabaseClient={supabase}
-            appearance={{
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: '#b45309',
-                    brandAccent: '#92400e',
-                  },
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gold">Welcome to GOLDINVEST</h1>
+          <p className="text-gray-500">Sign in to access your account</p>
+        </div>
+        <SupabaseAuth
+          supabaseClient={supabase}
+          appearance={{
+            theme: ThemeSupa,
+            variables: {
+              default: {
+                colors: {
+                  brand: '#B4833E',
+                  brandAccent: '#956B33',
                 },
               },
-            }}
-            providers={[]}
-            redirectTo={`${window.location.origin}/wallet`}
-            additionalData={{
-              first_name: undefined,
-              last_name: undefined,
-            }}
-          />
-        </div>
+            },
+          }}
+          providers={[]}
+        />
       </div>
     </div>
   );
 };
 
-export default AuthPage;
+export default Auth;
