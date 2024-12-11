@@ -2,6 +2,7 @@ import { WalletHeader } from "@/components/wallet/WalletHeader";
 import { QuickActions } from "@/components/wallet/QuickActions";
 import { TransactionHistory } from "@/components/wallet/TransactionHistory";
 import { WalletNavigation } from "@/components/wallet/WalletNavigation";
+import { Navbar } from "@/components/Navbar";
 import { useState } from "react";
 
 const WalletAccounts = () => {
@@ -30,15 +31,18 @@ const WalletAccounts = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 lg:p-8">
-      <WalletHeader
-        isRealWallet={isRealWallet}
-        setIsRealWallet={setIsRealWallet}
-        currentBalance={currentBalance}
-      />
-      <WalletNavigation />
-      <QuickActions />
-      <TransactionHistory transactions={mockTransactions} />
+    <div className="min-h-screen bg-black text-white">
+      <Navbar />
+      <main className="p-4 lg:p-8 pt-20">
+        <WalletHeader
+          isRealWallet={isRealWallet}
+          setIsRealWallet={setIsRealWallet}
+          currentBalance={currentBalance}
+        />
+        <WalletNavigation />
+        <QuickActions />
+        <TransactionHistory transactions={mockTransactions} />
+      </main>
     </div>
   );
 };

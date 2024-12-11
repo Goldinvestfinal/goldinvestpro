@@ -1,24 +1,42 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   return (
     <nav className="fixed w-full bg-background/80 backdrop-blur-md z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-xl font-bold text-gold">GOLDINVEST</Link>
+            <Link to="/" className="text-xl font-bold text-gold">
+              <div className="flex items-center gap-2">
+                <img src="/lovable-uploads/0a372b40-b9d7-4537-a616-a01f4c0e7d86.png" alt="GoldInvest Logo" className="h-8 w-8" />
+                GOLDINVEST
+              </div>
+            </Link>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/shop" className="text-gray-300 hover:text-gold transition-colors">Shop</Link>
-            <a href="#features" className="text-gray-300 hover:text-gold transition-colors">Features</a>
-            <Link to="/wallet" className="text-gray-300 hover:text-gold transition-colors">Wallet</Link>
-            <a href="#testimonials" className="text-gray-300 hover:text-gold transition-colors">Testimonials</a>
+            <Link 
+              to="/shop" 
+              className={`${isActive('/shop') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}
+            >
+              Shop
+            </Link>
+            <Link 
+              to="/wallet" 
+              className={`${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}
+            >
+              Wallet
+            </Link>
             <Button className="bg-gold hover:bg-gold-dark text-black">Get Started</Button>
           </div>
 
@@ -32,10 +50,18 @@ export const Navbar = () => {
         {isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <Link to="/shop" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">Shop</Link>
-              <a href="#features" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">Features</a>
-              <Link to="/wallet" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">Wallet</Link>
-              <a href="#testimonials" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">Testimonials</a>
+              <Link 
+                to="/shop" 
+                className={`block px-3 py-2 ${isActive('/shop') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}
+              >
+                Shop
+              </Link>
+              <Link 
+                to="/wallet" 
+                className={`block px-3 py-2 ${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}
+              >
+                Wallet
+              </Link>
               <Button className="w-full bg-gold hover:bg-gold-dark text-black mt-4">Get Started</Button>
             </div>
           </div>
