@@ -3,24 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { WalletTable } from "./WalletTable";
+import { TransactionTable } from "./TransactionTable";
 
 interface Wallet {
   id: string;
@@ -105,7 +96,7 @@ export const AdminDashboard = () => {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'wallets' },
-        (payload) => {
+        (payload: any) => {
           console.log('Wallet change received:', payload);
           if (payload.eventType === 'INSERT') {
             setWallets(prev => [payload.new as Wallet, ...prev]);
@@ -126,9 +117,9 @@ export const AdminDashboard = () => {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'transactions' },
-        (payload) => {
+        (payload: any) => {
           console.log('Transaction change received:', payload);
-          if (selectedWallet && payload.new.wallet_id === selectedWallet) {
+          if (selectedWallet && payload.new && payload.new.wallet_id === selectedWallet) {
             if (payload.eventType === 'INSERT') {
               setTransactions(prev => [payload.new as Transaction, ...prev]);
             } else if (payload.eventType === 'UPDATE') {
@@ -236,6 +227,14 @@ export const AdminDashboard = () => {
     }
   };
 
+  const handleViewTransactions = (walletId: string) => {
+    setSelectedWallet(walletId);
+    const tabsTrigger = document.querySelector('[data-state="inactive"][value="transactions"]') as HTMLElement;
+    if (tabsTrigger) {
+      tabsTrigger.click();
+    }
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -250,97 +249,24 @@ export const AdminDashboard = () => {
           </TabsList>
 
           <TabsContent value="wallets">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Wallet Type</TableHead>
-                  <TableHead>Balance</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {wallets.map((wallet) => (
-                  <TableRow key={wallet.id}>
-                    <TableCell>{getUserName(wallet.user_id)}</TableCell>
-                    <TableCell>
-                      <Badge variant={wallet.is_demo ? "secondary" : "default"}>
-                        {wallet.is_demo ? 'Demo' : 'Real'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>${wallet.balance.toLocaleString()}</TableCell>
-                    <TableCell className="space-x-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => handleUpdateBalance(wallet.id, wallet.balance)}
-                      >
-                        Update Balance
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setSelectedWallet(wallet.id);
-                          document.querySelector('[value="transactions"]')?.click();
-                        }}
-                      >
-                        View Transactions
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleAddTransaction(wallet.id)}
-                      >
-                        Add Transaction
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <WalletTable
+              wallets={wallets}
+              profiles={profiles}
+              onUpdateBalance={handleUpdateBalance}
+              onAddTransaction={handleAddTransaction}
+              onViewTransactions={handleViewTransactions}
+            />
           </TabsContent>
 
           <TabsContent value="transactions">
-            {selectedWallet ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium">
-                    Transactions for {getUserName(wallets.find(w => w.id === selectedWallet)?.user_id || '')}
-                  </h3>
-                  <Button variant="outline" onClick={() => setSelectedWallet(null)}>
-                    Back to All Wallets
-                  </Button>
-                </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {transactions.map((transaction) => (
-                      <TableRow key={transaction.id}>
-                        <TableCell>
-                          {new Date(transaction.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="capitalize">{transaction.type}</TableCell>
-                        <TableCell>${transaction.amount.toLocaleString()}</TableCell>
-                        <TableCell>
-                          <Badge variant={transaction.status === "completed" ? "success" : "warning"}>
-                            {transaction.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <div className="text-center py-4">
-                Select a wallet to view its transactions
-              </div>
-            )}
+            <TransactionTable
+              transactions={transactions}
+              selectedWallet={selectedWallet}
+              wallets={wallets}
+              profiles={profiles}
+              onBack={() => setSelectedWallet(null)}
+              getUserName={getUserName}
+            />
           </TabsContent>
         </Tabs>
       </CardContent>
