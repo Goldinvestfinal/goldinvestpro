@@ -1,4 +1,5 @@
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 const products = [
   {
@@ -19,6 +20,8 @@ const products = [
 ];
 
 export const ProductShowcase = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="bg-black py-24 px-4">
       <div className="max-w-7xl mx-auto">
@@ -37,8 +40,11 @@ export const ProductShowcase = () => {
               <div className="p-6">
                 <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
                 <p className="text-yellow-500 text-2xl mb-4">${product.price.toLocaleString()}</p>
-                <Button className="w-full bg-yellow-500 hover:bg-yellow-600">
-                  Invest Now
+                <Button 
+                  className="w-full bg-yellow-500 hover:bg-yellow-600"
+                  onClick={() => navigate("/shop")}
+                >
+                  Buy
                 </Button>
               </div>
             </div>
