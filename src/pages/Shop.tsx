@@ -30,6 +30,27 @@ const products = [
     price: 4200,
     image: "/lovable-uploads/724a4372-941a-4c72-ac41-721e32d1553b.png",
     description: "A spectacular crystalline gold formation showcasing nature's artistry. Features unique cavities and structural patterns that collectors prize.",
+  },
+  {
+    id: 5,
+    name: "Massive Gold Nugget Specimen",
+    price: 5890,
+    image: "/lovable-uploads/d282a498-6500-4dca-8fea-3abcceafd335.png",
+    description: "An impressive large gold nugget with exceptional purity and natural formations. This specimen showcases the raw beauty of natural gold.",
+  },
+  {
+    id: 6,
+    name: "Premium Gold Nugget Collection",
+    price: 4750,
+    image: "/lovable-uploads/0a2b8f87-c21a-4936-a6ee-d1593c3f65e4.png",
+    description: "A carefully curated collection of high-quality gold nuggets, each piece displaying unique characteristics and natural beauty.",
+  },
+  {
+    id: 7,
+    name: "Natural Gold Formation",
+    price: 3950,
+    image: "/lovable-uploads/27933b3b-200c-4d04-98f1-47ca790bc3c6.png",
+    description: "A remarkable natural gold formation with intricate patterns and textures. Perfect for collectors seeking unique specimens.",
   }
 ];
 
@@ -42,7 +63,7 @@ const Shop = () => {
           <h1 className="text-4xl font-bold text-gray-900">Natural Gold Nuggets</h1>
           <p className="mt-4 text-lg text-gray-600">Rare and unique specimens for collectors and investors</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
             <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardHeader>
@@ -53,7 +74,7 @@ const Shop = () => {
               <CardContent>
                 <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
                 <p className="text-gray-600 mb-4">{product.description}</p>
-                <p className="text-2xl font-bold text-primary">${product.price}</p>
+                <p className="text-2xl font-bold text-primary">${product.price.toLocaleString()}</p>
               </CardContent>
               <CardFooter>
                 <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => navigate("/wallet")}>Buy</Button>
