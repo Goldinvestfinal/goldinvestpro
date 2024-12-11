@@ -6,12 +6,15 @@ import { GoldGuide } from "@/components/GoldGuide";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-black text-white">
-      <Navbar />
-      <MainHero />
-      <GoldFeatures />
-      <ProductShowcase />
-      <GoldGuide />
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10" />
+      <div className="relative">
+        <Navbar />
+        <MainHero />
+        <GoldFeatures />
+        <ProductShowcase />
+        <GoldGuide />
+      </div>
     </div>
   );
 };
