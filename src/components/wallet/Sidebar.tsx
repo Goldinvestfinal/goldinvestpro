@@ -1,11 +1,8 @@
 import {
-  LayoutDashboard,
   Wallet,
   Send,
   Download,
   DollarSign,
-  Repeat,
-  Smartphone,
   HelpCircle,
   Shield,
   FileText,
@@ -28,13 +25,10 @@ export const Sidebar = () => {
   return (
     <div className="space-y-8">
       <div className="space-y-1">
-        <SidebarItem icon={LayoutDashboard} label="Portfolio" />
         <SidebarItem icon={Wallet} label="Accounts" />
         <SidebarItem icon={Send} label="Send" />
         <SidebarItem icon={Download} label="Receive" />
         <SidebarItem icon={DollarSign} label="Buy / Sell" />
-        <SidebarItem icon={Repeat} label="Swap" />
-        <SidebarItem icon={Smartphone} label="Device" />
       </div>
 
       <div>
