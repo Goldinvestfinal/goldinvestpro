@@ -3,8 +3,8 @@ export const MainHero = () => {
     <section className="relative min-h-screen flex items-center justify-center px-4 py-32">
       <div className="absolute inset-0">
         <img
-          src="/lovable-uploads/db363979-bee9-4ace-810b-c458111ef8f2.png"
-          alt="Gold liquid texture"
+          src="/lovable-uploads/aaa48f02-3665-4a5e-8dfc-dee926d8be54.png"
+          alt="Gold bars and trading chart"
           className="w-full h-full object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-black/50" />
