@@ -56,7 +56,7 @@ const Shop = () => {
                 <p className="text-2xl font-bold text-primary">${product.price}</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => navigate("/wallet")}>Invest Now</Button>
+                <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => navigate("/wallet")}>Buy</Button>
               </CardFooter>
             </Card>
           ))}
