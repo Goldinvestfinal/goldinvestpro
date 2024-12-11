@@ -20,7 +20,7 @@ import {
   Smartphone,
   Star,
   Bitcoin,
-  Ethereum,
+  Coins,
 } from "lucide-react";
 
 const mockChartData = [
@@ -69,8 +69,8 @@ export const WalletDashboard = () => {
             <button className="text-gray-400 hover:text-white">+</button>
           </div>
           <div className="space-y-1">
-            <SidebarItem icon={Ethereum} label="ETH" />
             <SidebarItem icon={Bitcoin} label="BTC" />
+            <SidebarItem icon={Coins} label="ETH" />
           </div>
         </div>
       </aside>
