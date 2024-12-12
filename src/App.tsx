@@ -10,10 +10,6 @@ import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Auth from "./pages/Auth";
 import Wallet from "./pages/Wallet";
-import WalletAccounts from "./pages/wallet/WalletAccounts";
-import WalletSend from "./pages/wallet/WalletSend";
-import WalletReceive from "./pages/wallet/WalletReceive";
-import WalletTrade from "./pages/wallet/WalletTrade";
 import { Footer } from "./components/Footer";
 
 // Protected Route component
@@ -67,38 +63,6 @@ const App: React.FC = () => {
                     element={
                       <ProtectedRoute>
                         <Wallet />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/wallet/accounts"
-                    element={
-                      <ProtectedRoute>
-                        <WalletAccounts />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/wallet/send"
-                    element={
-                      <ProtectedRoute>
-                        <WalletSend />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/wallet/receive"
-                    element={
-                      <ProtectedRoute>
-                        <WalletReceive />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/wallet/trade"
-                    element={
-                      <ProtectedRoute>
-                        <WalletTrade />
                       </ProtectedRoute>
                     }
                   />
