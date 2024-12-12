@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      cities: {
+        Row: {
+          country_id: number
+          id: number
+          name: string
+        }
+        Insert: {
+          country_id: number
+          id?: never
+          name: string
+        }
+        Update: {
+          country_id?: number
+          id?: never
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cities_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      countries: {
+        Row: {
+          id: number
+          name: string
+        }
+        Insert: {
+          id?: never
+          name: string
+        }
+        Update: {
+          id?: never
+          name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -37,7 +78,7 @@ export type Database = {
         Row: {
           amount: number
           created_at: string
-          id: string
+          id: number
           status: string
           type: string
           updated_at: string
@@ -46,7 +87,7 @@ export type Database = {
         Insert: {
           amount: number
           created_at?: string
-          id?: string
+          id?: never
           status: string
           type: string
           updated_at?: string
@@ -55,7 +96,7 @@ export type Database = {
         Update: {
           amount?: number
           created_at?: string
-          id?: string
+          id?: never
           status?: string
           type?: string
           updated_at?: string
@@ -111,7 +152,41 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      delete_user_profile: {
+        Args: {
+          user_id: string
+        }
+        Returns: undefined
+      }
+      get_user_wallet_balance: {
+        Args: {
+          user_id: string
+        }
+        Returns: number
+      }
+      log_user_activity: {
+        Args: {
+          user_id: string
+          activity: string
+        }
+        Returns: undefined
+      }
+      transfer_funds: {
+        Args: {
+          from_user_id: string
+          to_user_id: string
+          amount: number
+        }
+        Returns: undefined
+      }
+      update_user_profile: {
+        Args: {
+          user_id: string
+          first_name: string
+          last_name: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
