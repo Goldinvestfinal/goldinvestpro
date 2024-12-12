@@ -93,7 +93,7 @@ const Auth = () => {
       <div className="w-full max-w-md space-y-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gold">Welcome to GOLDINVEST</h1>
-          <p className="text-gray-500">Sign in to access your account</p>
+          <p className="text-foreground">Sign in to access your account</p>
         </div>
         <SupabaseAuth
           supabaseClient={supabase}
@@ -102,10 +102,30 @@ const Auth = () => {
             variables: {
               default: {
                 colors: {
-                  brand: '#B4833E',
-                  brandAccent: '#956B33',
+                  brand: '#B8860B',
+                  brandAccent: '#8B6914',
+                  brandButtonText: "white",
+                  defaultButtonBackground: "#B8860B",
+                  defaultButtonBackgroundHover: "#8B6914",
+                  inputBackground: "white",
+                  inputBorder: "#B8860B",
+                  inputBorderHover: "#8B6914",
+                  inputBorderFocus: "#B8860B",
+                  inputText: "black",
+                  inputLabelText: "white",
+                  messageText: "white",
+                  anchorTextColor: "#FFD700",
+                  dividerBackground: "#B8860B",
                 },
               },
+            },
+            className: {
+              anchor: 'text-gold hover:text-gold-light',
+              button: 'bg-gold hover:bg-gold-dark text-white',
+              container: 'text-foreground',
+              label: 'text-foreground',
+              loader: 'border-gold',
+              message: 'text-foreground',
             },
           }}
           providers={[]}
