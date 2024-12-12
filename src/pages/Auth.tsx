@@ -5,6 +5,7 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { toast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -16,15 +17,23 @@ const Auth = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          const { data: profile } = await supabase
+          console.log("Session found, checking profile");
+          const { data: profile, error: profileError } = await supabase
             .from("profiles")
             .select("is_admin")
             .eq("id", session.user.id)
             .single();
 
+          if (profileError) {
+            console.error("Profile check error:", profileError);
+            throw profileError;
+          }
+
           if (profile?.is_admin) {
+            console.log("Admin user detected");
             setIsAdmin(true);
           } else {
+            console.log("Regular user detected, redirecting to wallet");
             navigate("/wallet");
           }
         }
@@ -43,13 +52,16 @@ const Auth = () => {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event);
       if (event === "SIGNED_IN" && session) {
         try {
-          const { data: profile } = await supabase
+          const { data: profile, error: profileError } = await supabase
             .from("profiles")
             .select("is_admin")
             .eq("id", session.user.id)
             .single();
+
+          if (profileError) throw profileError;
 
           if (profile?.is_admin) {
             setIsAdmin(true);
@@ -64,6 +76,8 @@ const Auth = () => {
             description: "There was a problem verifying your profile. Please try again.",
           });
         }
+      } else if (event === "SIGNED_OUT") {
+        setIsAdmin(false);
       }
     });
 
@@ -74,8 +88,11 @@ const Auth = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold"></div>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-gold mx-auto" />
+          <p className="text-foreground">Loading your account...</p>
+        </div>
       </div>
     );
   }
@@ -90,10 +107,10 @@ const Auth = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gold">Welcome to GOLDINVEST</h1>
-          <p className="text-foreground">Sign in to access your account</p>
+      <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-lg shadow-lg">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold text-gold">Welcome to GOLDINVEST</h1>
+          <p className="text-foreground text-lg">Your Gateway to Digital Gold Investment</p>
         </div>
         <SupabaseAuth
           supabaseClient={supabase}
@@ -112,24 +129,28 @@ const Auth = () => {
                   inputBorderHover: "#8B6914",
                   inputBorderFocus: "#B8860B",
                   inputText: "black",
-                  inputLabelText: "white",
-                  messageText: "white",
-                  anchorTextColor: "#FFD700",
-                  dividerBackground: "#B8860B",
+                  inputPlaceholder: "gray",
+                  messageText: "#666666",
+                  messageTextDanger: "#ff4b4b",
+                  anchorTextColor: "#B8860B",
+                  dividerBackground: "#e5e7eb",
                 },
               },
             },
             className: {
-              anchor: 'text-gold hover:text-gold-light',
-              button: 'bg-gold hover:bg-gold-dark text-white',
+              anchor: 'text-gold hover:text-gold-dark transition-colors',
+              button: 'bg-gold hover:bg-gold-dark text-white transition-colors',
               container: 'text-foreground',
-              label: 'text-foreground',
+              label: 'text-gray-700',
               loader: 'border-gold',
-              message: 'text-foreground',
+              message: 'text-gray-600',
             },
           }}
           providers={[]}
         />
+        <div className="mt-6 text-center text-sm text-muted-foreground">
+          <p>By signing up, you agree to our Terms of Service and Privacy Policy</p>
+        </div>
       </div>
     </div>
   );
