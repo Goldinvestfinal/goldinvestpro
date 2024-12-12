@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface Transaction {
-  id: string;
+  id: number;  // Updated to match Supabase schema
   wallet_id: string;
   type: string;
   amount: number;

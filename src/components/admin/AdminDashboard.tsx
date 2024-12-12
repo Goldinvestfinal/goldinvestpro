@@ -21,12 +21,13 @@ interface Wallet {
 }
 
 interface Transaction {
-  id: string;
+  id: number;  // Changed from string to number to match Supabase
   wallet_id: string;
   type: string;
   amount: number;
   status: string;
   created_at: string;
+  updated_at: string;  // Added to match Supabase schema
 }
 
 interface Profile {
