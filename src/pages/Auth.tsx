@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { toast } from "@/components/ui/use-toast";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -11,27 +12,72 @@ const Auth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN") {
-        // Check if user is admin
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("is_admin")
-          .eq("id", session?.user?.id)
-          .single();
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("is_admin")
+            .eq("id", session.user.id)
+            .single();
 
-        if (profile?.is_admin) {
-          setIsAdmin(true);
-        } else {
-          navigate("/wallet");
+          if (profile?.is_admin) {
+            setIsAdmin(true);
+          } else {
+            navigate("/wallet");
+          }
+        }
+      } catch (error) {
+        console.error("Session check error:", error);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "There was a problem checking your session. Please try again.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        try {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("is_admin")
+            .eq("id", session.user.id)
+            .single();
+
+          if (profile?.is_admin) {
+            setIsAdmin(true);
+          } else {
+            navigate("/wallet");
+          }
+        } catch (error) {
+          console.error("Profile check error:", error);
+          toast({
+            variant: "destructive",
+            title: "Authentication Error",
+            description: "There was a problem verifying your profile. Please try again.",
+          });
         }
       }
-      setLoading(false);
     });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold"></div>
+      </div>
+    );
   }
 
   if (isAdmin) {
