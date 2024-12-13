@@ -9,32 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      cities: {
-        Row: {
-          country_id: number
-          id: number
-          name: string
-        }
-        Insert: {
-          country_id: number
-          id?: never
-          name: string
-        }
-        Update: {
-          country_id?: number
-          id?: never
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cities_country_id_fkey"
-            columns: ["country_id"]
-            isOneToOne: false
-            referencedRelation: "countries"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       countries: {
         Row: {
           id: number
@@ -57,6 +31,7 @@ export type Database = {
           id: string
           is_admin: boolean
           last_name: string | null
+          name: string | null
         }
         Insert: {
           created_at?: string
@@ -64,6 +39,7 @@ export type Database = {
           id: string
           is_admin?: boolean
           last_name?: string | null
+          name?: string | null
         }
         Update: {
           created_at?: string
@@ -71,6 +47,7 @@ export type Database = {
           id?: string
           is_admin?: boolean
           last_name?: string | null
+          name?: string | null
         }
         Relationships: []
       }
@@ -79,6 +56,7 @@ export type Database = {
           amount: number
           created_at: string
           id: number
+          name: string | null
           status: string
           type: string
           updated_at: string
@@ -88,6 +66,7 @@ export type Database = {
           amount: number
           created_at?: string
           id?: never
+          name?: string | null
           status: string
           type: string
           updated_at?: string
@@ -97,6 +76,7 @@ export type Database = {
           amount?: number
           created_at?: string
           id?: never
+          name?: string | null
           status?: string
           type?: string
           updated_at?: string
@@ -118,6 +98,7 @@ export type Database = {
           created_at: string
           id: string
           is_demo: boolean
+          name: string | null
           updated_at: string
           user_id: string
         }
@@ -126,6 +107,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_demo?: boolean
+          name?: string | null
           updated_at?: string
           user_id: string
         }
@@ -134,6 +116,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_demo?: boolean
+          name?: string | null
           updated_at?: string
           user_id?: string
         }
