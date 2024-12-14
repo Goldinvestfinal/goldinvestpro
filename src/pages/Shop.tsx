@@ -1,7 +1,18 @@
+import { Cloudinary } from "@cloudinary/url-gen";
+import { AdvancedImage } from "@cloudinary/react";
+import { fill } from "@cloudinary/url-gen/actions/resize";
+import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+
+// Initialize Cloudinary
+const cld = new Cloudinary({
+  cloud: {
+    cloudName: "demo" // Replace with your cloud name
+  }
+});
 
 const products = [
   {
@@ -57,6 +68,16 @@ const products = [
 
 const Shop = () => {
   const navigate = useNavigate();
+
+  const optimizeImage = (imagePath: string) => {
+    // Extract the filename from the path
+    const filename = imagePath.split('/').pop() || '';
+    return cld.image(filename)
+      .format('auto')
+      .quality('auto')
+      .resize(fill().width(500).height(500).gravity(autoGravity()));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -70,7 +91,11 @@ const Shop = () => {
             <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="aspect-square relative overflow-hidden rounded-t-lg bg-black">
-                  <img src={product.image} alt={product.name} className="object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                  <AdvancedImage 
+                    cldImg={optimizeImage(product.image)}
+                    className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
+                    alt={product.name}
+                  />
                 </div>
               </CardHeader>
               <CardContent>
@@ -79,7 +104,12 @@ const Shop = () => {
                 <p className="text-2xl font-bold text-primary">${product.price.toLocaleString()}</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => navigate("/wallet")}>Buy</Button>
+                <Button 
+                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" 
+                  onClick={() => navigate("/wallet")}
+                >
+                  Buy
+                </Button>
               </CardFooter>
             </Card>
           ))}
