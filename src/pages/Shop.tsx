@@ -1,18 +1,7 @@
-import { Cloudinary } from "@cloudinary/url-gen";
-import { AdvancedImage } from "@cloudinary/react";
-import { fill } from "@cloudinary/url-gen/actions/resize";
-import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
-
-// Initialize Cloudinary
-const cld = new Cloudinary({
-  cloud: {
-    cloudName: "demo" // Replace with your cloud name
-  }
-});
 
 const products = [
   {
@@ -69,46 +58,38 @@ const products = [
 const Shop = () => {
   const navigate = useNavigate();
 
-  const optimizeImage = (imagePath: string) => {
-    // Extract the filename from the path
-    const filename = imagePath.split('/').pop() || '';
-    return cld.image(filename)
-      .format('auto')
-      .quality('auto')
-      .resize(fill().width(500).height(500).gravity(autoGravity()));
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900">Natural Gold Nuggets</h1>
-          <p className="mt-4 text-lg text-gray-600">Rare and unique specimens for collectors and investors</p>
+          <h1 className="text-4xl font-bold text-gold">Natural Gold Nuggets</h1>
+          <p className="mt-4 text-lg text-gray-300">Rare and unique specimens for collectors and investors</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
-            <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-gray-900 border-gold/20">
               <CardHeader>
                 <div className="aspect-square relative overflow-hidden rounded-t-lg bg-black">
-                  <AdvancedImage 
-                    cldImg={optimizeImage(product.image)}
+                  <img 
+                    src={product.image}
                     className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
                     alt={product.name}
+                    loading="lazy"
                   />
                 </div>
               </CardHeader>
               <CardContent>
-                <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
-                <p className="text-gray-600 mb-4">{product.description}</p>
-                <p className="text-2xl font-bold text-primary">${product.price.toLocaleString()}</p>
+                <h2 className="text-xl font-semibold mb-2 text-white">{product.name}</h2>
+                <p className="text-gray-400 mb-4">{product.description}</p>
+                <p className="text-2xl font-bold text-gold">${product.price.toLocaleString()}</p>
               </CardContent>
               <CardFooter>
                 <Button 
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" 
+                  className="w-full bg-gold hover:bg-gold-light text-black font-semibold" 
                   onClick={() => navigate("/wallet")}
                 >
-                  Buy
+                  Buy Now
                 </Button>
               </CardFooter>
             </Card>
