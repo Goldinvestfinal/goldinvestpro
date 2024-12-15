@@ -61,6 +61,8 @@ export type Database = {
           type: string
           updated_at: string
           wallet_id: string
+          withdrawal_address: string | null
+          withdrawal_method: string | null
         }
         Insert: {
           amount: number
@@ -71,6 +73,8 @@ export type Database = {
           type: string
           updated_at?: string
           wallet_id: string
+          withdrawal_address?: string | null
+          withdrawal_method?: string | null
         }
         Update: {
           amount?: number
@@ -81,6 +85,8 @@ export type Database = {
           type?: string
           updated_at?: string
           wallet_id?: string
+          withdrawal_address?: string | null
+          withdrawal_method?: string | null
         }
         Relationships: [
           {
@@ -130,6 +136,47 @@ export type Database = {
           },
         ]
       }
+      withdrawal_methods: {
+        Row: {
+          address: string
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          label: string
+          method: Database["public"]["Enums"]["withdrawal_method_type"]
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          address: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          label: string
+          method: Database["public"]["Enums"]["withdrawal_method_type"]
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          address?: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string
+          method?: Database["public"]["Enums"]["withdrawal_method_type"]
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawal_methods_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -172,7 +219,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      withdrawal_method_type: "crypto" | "paypal" | "bank"
     }
     CompositeTypes: {
       [_ in never]: never
