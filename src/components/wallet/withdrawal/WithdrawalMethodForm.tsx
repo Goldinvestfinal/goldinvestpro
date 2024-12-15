@@ -8,12 +8,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
 
 const withdrawalMethodSchema = z.object({
   method: z.enum(["crypto", "paypal", "bank"] as const),
   label: z.string().min(1, "Label is required"),
   address: z.string().min(1, "Address is required"),
 });
+
+type WithdrawalMethodFormValues = z.infer<typeof withdrawalMethodSchema>;
 
 type WithdrawalMethodFormProps = {
   onSuccess: () => void;
@@ -22,7 +25,7 @@ type WithdrawalMethodFormProps = {
 
 export const WithdrawalMethodForm = ({ onSuccess, onCancel }: WithdrawalMethodFormProps) => {
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof withdrawalMethodSchema>>({
+  const form = useForm<WithdrawalMethodFormValues>({
     resolver: zodResolver(withdrawalMethodSchema),
     defaultValues: {
       method: "crypto",
@@ -31,11 +34,22 @@ export const WithdrawalMethodForm = ({ onSuccess, onCancel }: WithdrawalMethodFo
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof withdrawalMethodSchema>) => {
+  const onSubmit = async (values: WithdrawalMethodFormValues) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
       const { error } = await supabase
         .from("withdrawal_methods")
-        .insert(values);
+        .insert({
+          user_id: user.id,
+          method: values.method,
+          label: values.label,
+          address: values.address,
+        });
 
       if (error) throw error;
 
