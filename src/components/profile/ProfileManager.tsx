@@ -92,9 +92,9 @@ export const ProfileManager = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-gold">Profile Settings</h2>
+    <div className="max-w-3xl mx-auto p-4 space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gold">Profile Settings</h2>
         <Button 
           onClick={() => setIsEditing(true)} 
           className="bg-gold hover:bg-gold-light text-white transition-colors"
@@ -103,24 +103,24 @@ export const ProfileManager = () => {
         </Button>
       </div>
 
-      <Card className="bg-gradient-to-br from-background via-background to-gold/5 backdrop-blur-sm border-gold/20 p-8 rounded-xl shadow-xl">
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+      <Card className="bg-gradient-to-br from-background via-background to-gold/5 backdrop-blur-sm border-gold/20 p-6 rounded-lg shadow-lg">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
           <div className="relative">
-            <Avatar className="h-32 w-32 border-4 border-gold/20">
+            <Avatar className="h-24 w-24 border-2 border-gold/20">
               <AvatarImage src={user?.user_metadata?.avatar_url} />
-              <AvatarFallback className="bg-gold text-white text-3xl">
+              <AvatarFallback className="bg-gold text-white text-2xl">
                 {getInitials(profile?.first_name, profile?.last_name)}
               </AvatarFallback>
             </Avatar>
           </div>
           
-          <div className="flex-1 space-y-4 text-center md:text-left">
-            <h3 className="text-2xl font-semibold text-gold">
+          <div className="flex-1 space-y-3 text-center md:text-left">
+            <h3 className="text-xl font-semibold text-gold">
               {profile?.first_name} {profile?.last_name}
             </h3>
-            <p className="text-gold/80">{user?.email}</p>
-            <div className="flex flex-wrap gap-4">
-              <div className="bg-gold/10 px-4 py-2 rounded-full text-gold/90">
+            <p className="text-gold/80 text-sm">{user?.email}</p>
+            <div className="flex flex-wrap gap-3">
+              <div className="bg-gold/10 px-3 py-1 rounded-full text-gold/90 text-sm">
                 Member since {new Date(user?.created_at || '').toLocaleDateString()}
               </div>
             </div>
