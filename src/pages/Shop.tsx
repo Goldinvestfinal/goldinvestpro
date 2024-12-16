@@ -5,13 +5,6 @@ import { Navbar } from "@/components/Navbar";
 
 const products = [
   {
-    id: 1,
-    name: "Premium Silver Bars Collection",
-    price: 1250,
-    image: "/lovable-uploads/b9e0c184-4206-447f-ae42-2ea24f756f1e.png",
-    description: "A stunning collection of pure silver bars, professionally stored and certified. Perfect for investors seeking precious metal diversification.",
-  },
-  {
     id: 2,
     name: "999.9 Gold Bars Set",
     price: 5890,

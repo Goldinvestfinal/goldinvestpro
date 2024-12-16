@@ -4,12 +4,6 @@ import { useNavigate } from "react-router-dom";
 // Using the same products from the Shop page
 const products = [
   {
-    id: 1,
-    name: "Premium Silver Bars Collection",
-    price: 1250,
-    image: "/lovable-uploads/b9e0c184-4206-447f-ae42-2ea24f756f1e.png",
-  },
-  {
     id: 2,
     name: "999.9 Gold Bars Set",
     price: 5890,
@@ -20,6 +14,12 @@ const products = [
     name: "Investment Grade Gold Bars",
     price: 7450,
     image: "/lovable-uploads/b97b6dfd-433f-44b7-9d69-f03a6c6caa32.png",
+  },
+  {
+    id: 4,
+    name: "Gold Jewelry Collection",
+    price: 3975,
+    image: "/lovable-uploads/1ad797c5-99e1-4876-a3ed-12da958c6a06.png",
   },
 ].slice(0, 3); // Only showing first 3 products in showcase
 
