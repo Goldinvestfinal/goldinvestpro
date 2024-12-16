@@ -1,23 +1,27 @@
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
+// Using the same products from the Shop page
 const products = [
   {
-    name: "Archangel Michael Gold Bar",
-    price: 2842.00,
-    image: "/lovable-uploads/0a372b40-b9d7-4537-a616-a01f4c0e7d86.png",
+    id: 1,
+    name: "Premium Silver Bars Collection",
+    price: 1250,
+    image: "/lovable-uploads/b9e0c184-4206-447f-ae42-2ea24f756f1e.png",
   },
   {
-    name: "The Great Britannia Gold Bar",
-    price: 3445.00,
-    image: "/lovable-uploads/3dc2def8-f864-48d0-ba0d-c1a5a4a593df.png",
+    id: 2,
+    name: "999.9 Gold Bars Set",
+    price: 5890,
+    image: "/lovable-uploads/a527d2d8-983c-4d29-87a2-a80f46074d28.png",
   },
   {
-    name: "PAMP Gold Bar",
-    price: 2891.00,
-    image: "/lovable-uploads/16fcc8de-a86a-41b7-907f-0946c7ee17bd.png",
+    id: 3,
+    name: "Investment Grade Gold Bars",
+    price: 7450,
+    image: "/lovable-uploads/b97b6dfd-433f-44b7-9d69-f03a6c6caa32.png",
   },
-];
+].slice(0, 3); // Only showing first 3 products in showcase
 
 export const ProductShowcase = () => {
   const navigate = useNavigate();
@@ -29,7 +33,7 @@ export const ProductShowcase = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {products.map((product) => (
-            <div key={product.name} className="bg-gray-900 rounded-lg overflow-hidden">
+            <div key={product.id} className="bg-gray-900 rounded-lg overflow-hidden">
               <div className="aspect-square relative">
                 <img
                   src={product.image}
