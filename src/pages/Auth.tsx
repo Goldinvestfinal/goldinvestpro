@@ -109,7 +109,7 @@ const Auth = () => {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-lg shadow-lg">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-gold">Welcome to GOLDINVEST</h1>
+          <h1 className="text-3xl font-bold text-gold">Welcome to GOLDINVESTPRO</h1>
           <p className="text-foreground text-lg">Your Gateway to Digital Gold Investment</p>
         </div>
         <SupabaseAuth
@@ -146,7 +146,8 @@ const Auth = () => {
               message: 'text-gray-600',
             },
           }}
-          providers={[]}
+          providers={["google"]}
+          redirectTo={`${window.location.origin}/auth/callback`}
         />
         <div className="mt-6 text-center text-sm text-muted-foreground">
           <p>By signing up, you agree to our Terms of Service and Privacy Policy</p>
