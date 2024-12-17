@@ -10,6 +10,9 @@ import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Auth from "./pages/Auth";
 import Wallet from "./pages/Wallet";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Compliance from "./pages/Compliance";
 import { Footer } from "./components/Footer";
 
 // Protected Route component
@@ -84,6 +87,9 @@ const App: React.FC = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/compliance" element={<Compliance />} />
                   <Route
                     path="/wallet"
                     element={
