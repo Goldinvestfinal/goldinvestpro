@@ -9,6 +9,50 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          content: string
+          created_at: string | null
+          excerpt: string | null
+          id: string
+          image_url: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          created_at?: string | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          created_at?: string | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       countries: {
         Row: {
           id: number
@@ -21,6 +65,39 @@ export type Database = {
         Update: {
           id?: never
           name?: string
+        }
+        Relationships: []
+      }
+      pricing_plans: {
+        Row: {
+          created_at: string | null
+          description: string
+          features: string[]
+          id: string
+          is_popular: boolean | null
+          name: string
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          features: string[]
+          id?: string
+          is_popular?: boolean | null
+          name: string
+          price: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          features?: string[]
+          id?: string
+          is_popular?: boolean | null
+          name?: string
+          price?: number
+          updated_at?: string | null
         }
         Relationships: []
       }
