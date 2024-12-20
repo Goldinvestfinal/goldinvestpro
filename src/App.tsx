@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Auth from "./pages/Auth";
+import About from "./pages/About";
 import Wallet from "./pages/Wallet";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -87,6 +88,7 @@ const App: React.FC = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/about" element={<About />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/compliance" element={<Compliance />} />
