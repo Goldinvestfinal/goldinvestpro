@@ -44,10 +44,6 @@ export const Navbar = () => {
               About Us
             </Link>
 
-            <Link to="/pricing" className="text-gray-300 hover:text-gold transition-colors">
-              Pricing
-            </Link>
-
             <Link to="/blog" className="text-gray-300 hover:text-gold transition-colors">
               Blog
             </Link>
@@ -84,9 +80,6 @@ export const Navbar = () => {
               </Link>
               <Link to="/about" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">
                 About Us
-              </Link>
-              <Link to="/pricing" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">
-                Pricing
               </Link>
               <Link to="/blog" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">
                 Blog
