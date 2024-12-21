@@ -3,6 +3,7 @@ import { MainHero } from "@/components/MainHero";
 import { GoldFeatures } from "@/components/GoldFeatures";
 import { ProductShowcase } from "@/components/ProductShowcase";
 import { GoldGuide } from "@/components/GoldGuide";
+import { AboutSection } from "@/components/AboutSection";
 
 const Index = () => {
   return (
@@ -12,6 +13,7 @@ const Index = () => {
         <Navbar />
         <MainHero />
         <ProductShowcase />
+        <AboutSection />
         <GoldFeatures />
         <GoldGuide />
       </div>
