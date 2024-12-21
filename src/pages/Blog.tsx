@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
+import { GoldChart } from "@/components/GoldChart";
 
 interface BlogPost {
   id: string;
@@ -34,6 +35,9 @@ const Blog = () => {
     return (
       <div className="container mx-auto px-4 py-24 mt-16">
         <h1 className="text-4xl font-bold mb-12">Gold Investment Blog</h1>
+        <div className="mb-12">
+          <Skeleton className="h-[400px] w-full" />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="hover:shadow-lg transition-shadow">
@@ -54,6 +58,9 @@ const Blog = () => {
   return (
     <div className="container mx-auto px-4 py-24 mt-16">
       <h1 className="text-4xl font-bold mb-12">Gold Investment Blog</h1>
+      <div className="mb-12">
+        <GoldChart />
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {posts?.map((post) => (
           <Link to={`/blog/${post.slug}`} key={post.id}>
