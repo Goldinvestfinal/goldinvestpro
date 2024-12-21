@@ -40,11 +40,11 @@ export const Navbar = () => {
               Products
             </Link>
 
-            <Link to="/about" className="text-gray-300 hover:text-gold transition-colors">
+            <Link to="/about" className={`${isActive('/about') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
               About Us
             </Link>
 
-            <Link to="/blog" className="text-gray-300 hover:text-gold transition-colors">
+            <Link to="/blog" className={`${isActive('/blog') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
               Blog
             </Link>
 
@@ -78,10 +78,10 @@ export const Navbar = () => {
               <Link to="/shop" className={`block px-3 py-2 ${isActive('/shop') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
                 Products
               </Link>
-              <Link to="/about" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">
+              <Link to="/about" className={`block px-3 py-2 ${isActive('/about') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
                 About Us
               </Link>
-              <Link to="/blog" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">
+              <Link to="/blog" className={`block px-3 py-2 ${isActive('/blog') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
                 Blog
               </Link>
               {isAuthenticated && (
