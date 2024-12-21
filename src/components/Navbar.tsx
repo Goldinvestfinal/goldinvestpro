@@ -1,14 +1,8 @@
 import { useState, useEffect } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,20 +36,6 @@ export const Navbar = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="text-gray-300 hover:text-gold transition-colors inline-flex items-center">
-                Solutions <ChevronDown className="ml-1 h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-background/95 backdrop-blur-md border border-gold/20">
-                <DropdownMenuItem className="text-gray-300 hover:text-gold hover:bg-gold/10">
-                  Investment Solutions
-                </DropdownMenuItem>
-                <DropdownMenuItem className="text-gray-300 hover:text-gold hover:bg-gold/10">
-                  Storage Solutions
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
             <Link to="/shop" className={`${isActive('/shop') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
               Products
             </Link>
@@ -99,9 +79,6 @@ export const Navbar = () => {
         {isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-background/95 backdrop-blur-md rounded-lg border border-gold/20">
-              <Link to="/solutions" className="block px-3 py-2 text-gray-300 hover:text-gold transition-colors">
-                Solutions
-              </Link>
               <Link to="/shop" className={`block px-3 py-2 ${isActive('/shop') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
                 Products
               </Link>
