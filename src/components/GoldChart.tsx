@@ -1,34 +1,26 @@
+import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-interface GoldStats {
-  prices_eur: number[];
-  timestamps: string[];
+interface GoldPrice {
+  price: number;
+  timestamp: number;
+  currency: string;
 }
 
 export const GoldChart = () => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["gold-stats"],
+    queryKey: ["gold-price"],
     queryFn: async () => {
-      console.log("Fetching gold stats...");
+      console.log("Fetching gold price...");
       const { data, error } = await supabase.functions.invoke("gold-stats");
       if (error) {
-        console.error("Error fetching gold stats:", error);
+        console.error("Error fetching gold price:", error);
         throw error;
       }
-      console.log("Received gold stats:", data);
-      return data as GoldStats;
+      console.log("Received gold price data:", data);
+      return data as GoldPrice;
     },
     refetchInterval: 300000, // Refetch every 5 minutes
   });
@@ -36,7 +28,9 @@ export const GoldChart = () => {
   if (isLoading) {
     return (
       <Card className="p-6">
-        <Skeleton className="h-[400px] w-full" />
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold"></div>
+        </div>
       </Card>
     );
   }
@@ -52,55 +46,32 @@ export const GoldChart = () => {
     );
   }
 
-  // Ensure we have valid data before proceeding
-  if (!data?.timestamps || !data?.prices_eur) {
+  if (!data || !data.price) {
     console.error("Invalid data structure received:", data);
     return (
       <Card className="p-6">
         <div className="text-center text-red-500">
-          Invalid data format received. Please try again later.
+          No price data available. Please try again later.
         </div>
       </Card>
     );
   }
 
-  const chartData = data.timestamps.map((timestamp, index) => ({
-    timestamp: new Date(timestamp).toLocaleDateString(),
-    price: data.prices_eur[index],
-  }));
+  const formattedPrice = new Intl.NumberFormat('de-DE', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(data.price);
+
+  const formattedDate = new Date(data.timestamp * 1000).toLocaleString();
 
   return (
     <Card className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Gold Price Chart</h2>
-      <div className="h-[400px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              tick={{ fill: 'currentColor' }}
-            />
-            <YAxis
-              tick={{ fill: 'currentColor' }}
-              domain={['auto', 'auto']}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                border: 'none',
-                borderRadius: '4px',
-                color: '#fff',
-              }}
-            />
-            <Line
-              type="monotone"
-              dataKey="price"
-              stroke="#FFD700"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="space-y-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gold">Current Gold Price</h2>
+          <p className="text-4xl font-bold mt-2">{formattedPrice}</p>
+          <p className="text-sm text-gray-500 mt-1">Last updated: {formattedDate}</p>
+        </div>
       </div>
     </Card>
   );

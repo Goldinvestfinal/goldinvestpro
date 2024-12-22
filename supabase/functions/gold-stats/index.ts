@@ -18,8 +18,8 @@ serve(async (req) => {
       throw new Error('GOLDAPI_KEY is not set')
     }
 
-    console.log('Fetching gold price statistics...')
-    const response = await fetch('https://www.goldapi.io/api/stat', {
+    // Fetch gold price data from the API
+    const response = await fetch('https://www.goldapi.io/api/XAU/EUR', {
       headers: {
         'x-access-token': GOLDAPI_KEY,
         'Content-Type': 'application/json',
@@ -31,20 +31,21 @@ serve(async (req) => {
       throw new Error(`Gold API responded with status: ${response.status}`)
     }
 
-    const data = await response.json()
-    console.log('Successfully fetched gold price statistics')
+    const rawData = await response.json()
+    console.log('Successfully fetched gold price data:', rawData)
 
-    // Transform the data into the expected format
+    // Transform the data into our expected format
     const transformedData = {
-      timestamps: data.timestamps || [],
-      prices_eur: data.prices_eur || [],
+      price: rawData.price,
+      timestamp: rawData.timestamp,
+      currency: 'EUR'
     }
 
     return new Response(JSON.stringify(transformedData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
-    console.error('Error fetching gold price statistics:', error)
+    console.error('Error fetching gold price:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       {
