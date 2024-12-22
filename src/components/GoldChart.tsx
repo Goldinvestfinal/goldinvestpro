@@ -21,8 +21,13 @@ export const GoldChart = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["gold-stats"],
     queryFn: async () => {
+      console.log("Fetching gold stats...");
       const { data, error } = await supabase.functions.invoke("gold-stats");
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching gold stats:", error);
+        throw error;
+      }
+      console.log("Received gold stats:", data);
       return data as GoldStats;
     },
     refetchInterval: 300000, // Refetch every 5 minutes
@@ -37,6 +42,7 @@ export const GoldChart = () => {
   }
 
   if (error) {
+    console.error("Error in GoldChart:", error);
     return (
       <Card className="p-6">
         <div className="text-center text-red-500">
@@ -46,7 +52,19 @@ export const GoldChart = () => {
     );
   }
 
-  const chartData = data?.timestamps.map((timestamp, index) => ({
+  // Ensure we have valid data before proceeding
+  if (!data?.timestamps || !data?.prices_eur) {
+    console.error("Invalid data structure received:", data);
+    return (
+      <Card className="p-6">
+        <div className="text-center text-red-500">
+          Invalid data format received. Please try again later.
+        </div>
+      </Card>
+    );
+  }
+
+  const chartData = data.timestamps.map((timestamp, index) => ({
     timestamp: new Date(timestamp).toLocaleDateString(),
     price: data.prices_eur[index],
   }));
