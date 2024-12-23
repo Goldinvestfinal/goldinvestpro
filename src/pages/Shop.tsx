@@ -3,6 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Search, Filter, ChevronDown } from "lucide-react";
+import { PriceHistoryChart } from "@/components/PriceHistoryChart";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -99,6 +100,11 @@ const Shop = () => {
             carefully curated for discerning investors.
           </p>
         </div>
+      </div>
+
+      {/* Price Chart Section */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <PriceHistoryChart />
       </div>
 
       {/* Filters Section */}
