@@ -8,49 +8,51 @@ const corsHeaders = {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const GOLDAPI_KEY = Deno.env.get('GOLDAPI_KEY')
-    if (!GOLDAPI_KEY) {
-      console.error('GOLDAPI_KEY is not set')
-      throw new Error('GOLDAPI_KEY is not set')
-    }
-
-    // Fetch gold price data from the API
+    console.log('Fetching gold price from API...')
     const response = await fetch('https://www.goldapi.io/api/XAU/EUR', {
       headers: {
-        'x-access-token': GOLDAPI_KEY,
-        'Content-Type': 'application/json',
-      },
+        'x-access-token': Deno.env.get('GOLDAPI_KEY') || '',
+        'Content-Type': 'application/json'
+      }
     })
 
     if (!response.ok) {
-      console.error(`Gold API responded with status: ${response.status}`)
       throw new Error(`Gold API responded with status: ${response.status}`)
     }
 
-    const rawData = await response.json()
-    console.log('Successfully fetched gold price data:', rawData)
+    const data = await response.json()
+    console.log('Received gold price data:', data)
 
-    // Transform the data into our expected format
-    const transformedData = {
-      price: rawData.price,
-      timestamp: rawData.timestamp,
+    // Transform the data to match our needs
+    const goldData = {
+      price: data.price,
+      timestamp: Math.floor(Date.now() / 1000),
       currency: 'EUR'
     }
 
-    return new Response(JSON.stringify(transformedData), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    return new Response(
+      JSON.stringify(goldData),
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        } 
+      }
+    )
   } catch (error) {
     console.error('Error fetching gold price:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        },
+        status: 500
       }
     )
   }
