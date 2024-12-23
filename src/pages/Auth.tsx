@@ -5,6 +5,9 @@ import { Navbar } from "@/components/Navbar";
 import { ChatAdvisor } from "@/components/ChatAdvisor";
 
 const Auth = () => {
+  // Get the current origin for the redirect URL
+  const redirectTo = `${window.location.origin}/`;
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -26,7 +29,7 @@ const Auth = () => {
             },
           }}
           providers={["google"]}
-          redirectTo={window.location.origin}
+          redirectTo={redirectTo}
         />
       </div>
       <ChatAdvisor />
