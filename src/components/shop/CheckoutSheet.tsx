@@ -7,57 +7,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { CreditCard, PaypalIcon } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const CheckoutSheet = ({ product, onSuccess }: { product: any, onSuccess?: () => void }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal'>('card');
-
-  const handleStripeCheckout = async () => {
-    try {
-      setIsLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to complete your purchase",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          priceId: product.id,
-          successUrl: `${window.location.origin}/success`,
-          cancelUrl: `${window.location.origin}/shop`,
-        }),
-      });
-
-      const { url } = await response.json();
-      window.location.href = url;
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      toast({
-        title: "Error",
-        description: "Unable to process payment. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handlePayPalCheckout = async () => {
     try {
@@ -112,7 +69,7 @@ export const CheckoutSheet = ({ product, onSuccess }: { product: any, onSuccess?
         <SheetHeader>
           <SheetTitle className="text-amber-400">Checkout</SheetTitle>
           <SheetDescription className="text-amber-400/80">
-            Complete your purchase securely
+            Complete your purchase securely with PayPal
           </SheetDescription>
         </SheetHeader>
         
@@ -124,36 +81,9 @@ export const CheckoutSheet = ({ product, onSuccess }: { product: any, onSuccess?
           </div>
 
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                variant={paymentMethod === 'card' ? 'default' : 'outline'}
-                className={`flex items-center justify-center gap-2 ${
-                  paymentMethod === 'card' 
-                    ? 'bg-amber-600 hover:bg-amber-700 text-white' 
-                    : 'border-amber-600/20 text-amber-400 hover:bg-amber-600/10'
-                }`}
-                onClick={() => setPaymentMethod('card')}
-              >
-                <CreditCard className="w-4 h-4" />
-                Card
-              </Button>
-              <Button
-                variant={paymentMethod === 'paypal' ? 'default' : 'outline'}
-                className={`flex items-center justify-center gap-2 ${
-                  paymentMethod === 'paypal' 
-                    ? 'bg-amber-600 hover:bg-amber-700 text-white' 
-                    : 'border-amber-600/20 text-amber-400 hover:bg-amber-600/10'
-                }`}
-                onClick={() => setPaymentMethod('paypal')}
-              >
-                <PaypalIcon className="w-4 h-4" />
-                PayPal
-              </Button>
-            </div>
-
             <Button
-              className="w-full bg-amber-600 hover:bg-amber-700 text-white"
-              onClick={paymentMethod === 'card' ? handleStripeCheckout : handlePayPalCheckout}
+              className="w-full bg-[#0070ba] hover:bg-[#003087] text-white flex items-center justify-center gap-2"
+              onClick={handlePayPalCheckout}
               disabled={isLoading}
             >
               {isLoading ? (
@@ -162,7 +92,7 @@ export const CheckoutSheet = ({ product, onSuccess }: { product: any, onSuccess?
                   Processing...
                 </span>
               ) : (
-                `Pay with ${paymentMethod === 'card' ? 'Card' : 'PayPal'}`
+                "Pay with PayPal"
               )}
             </Button>
           </div>
