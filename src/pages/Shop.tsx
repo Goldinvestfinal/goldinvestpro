@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Search, Filter, ChevronDown } from "lucide-react";
 import { PriceHistoryChart } from "@/components/PriceHistoryChart";
+import { CheckoutSheet } from "@/components/shop/CheckoutSheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -168,12 +169,7 @@ const Shop = () => {
               </CardContent>
               
               <CardFooter className="p-6 pt-0">
-                <Button 
-                  className="w-full bg-gold hover:bg-gold-dark text-black font-semibold transform hover:scale-105 transition-all duration-300" 
-                  onClick={() => navigate("/wallet")}
-                >
-                  Purchase Now
-                </Button>
+                <CheckoutSheet product={product} />
               </CardFooter>
             </Card>
           ))}
