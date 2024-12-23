@@ -9,41 +9,53 @@ import {
 } from "@/components/ui/sheet";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export const CheckoutSheet = ({ product, onSuccess }: { product: any, onSuccess?: () => void }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handlePayPalCheckout = async () => {
     try {
       setIsLoading(true);
+      console.log("Starting PayPal checkout process...");
+
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
+        console.log("No active session found, redirecting to auth...");
         toast({
           title: "Authentication required",
           description: "Please sign in to complete your purchase",
           variant: "destructive",
         });
+        navigate("/auth");
         return;
       }
 
-      const response = await fetch('/api/create-paypal-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
+      console.log("Calling create-paypal-order function...");
+      const { data, error } = await supabase.functions.invoke('create-paypal-order', {
+        body: {
           productId: product.id,
           amount: product.price,
-        }),
+        }
       });
 
-      const { orderUrl } = await response.json();
-      window.location.href = orderUrl;
+      if (error) {
+        console.error('PayPal order creation error:', error);
+        throw error;
+      }
+
+      console.log("PayPal order created successfully:", data);
+      
+      if (data?.orderUrl) {
+        window.location.href = data.orderUrl;
+      } else {
+        throw new Error('No PayPal order URL received');
+      }
+      
     } catch (error) {
       console.error('Error creating PayPal order:', error);
       toast({
