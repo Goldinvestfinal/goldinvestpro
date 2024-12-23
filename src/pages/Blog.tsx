@@ -4,6 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { GoldChart } from "@/components/GoldChart";
+import { Navbar } from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface BlogPost {
   id: string;
@@ -33,50 +36,80 @@ const Blog = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-24 mt-16">
-        <h1 className="text-4xl font-bold mb-12">Gold Investment Blog</h1>
-        <div className="mb-12">
-          <Skeleton className="h-[400px] w-full" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <Skeleton className="h-8 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-full" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-20 w-full" />
-              </CardContent>
-            </Card>
-          ))}
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 py-24">
+          <h1 className="text-4xl font-bold mb-12">Gold Investment Blog</h1>
+          <div className="mb-12">
+            <Skeleton className="h-[400px] w-full" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <Skeleton className="h-8 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-full" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-20 w-full" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-24 mt-16">
-      <h1 className="text-4xl font-bold mb-12">Gold Investment Blog</h1>
-      <div className="mb-12">
-        <GoldChart />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts?.map((post) => (
-          <Link to={`/blog/${post.slug}`} key={post.id}>
-            <Card className="h-full hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-xl mb-2">{post.title}</CardTitle>
-                <CardDescription>
-                  {new Date(post.created_at).toLocaleDateString()}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{post.excerpt}</p>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="container mx-auto px-4 py-24">
+        <div className="flex justify-between items-center mb-12">
+          <h1 className="text-4xl font-bold">Gold Investment Blog</h1>
+          <div className="flex gap-4">
+            <Button variant="outline" size="sm">
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Previous
+            </Button>
+            <Button variant="outline" size="sm">
+              Next
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        <div className="mb-12">
+          <GoldChart />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts?.map((post) => (
+            <Link to={`/blog/${post.slug}`} key={post.id}>
+              <Card className="h-full hover:shadow-lg transition-shadow border-gold/20 hover:border-gold/40">
+                <CardHeader>
+                  <CardTitle className="text-xl mb-2">{post.title}</CardTitle>
+                  <CardDescription>
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{post.excerpt}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+        <div className="flex justify-center mt-12">
+          <div className="flex gap-4">
+            <Button variant="outline" size="sm">
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Previous
+            </Button>
+            <Button variant="outline" size="sm">
+              Next
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
