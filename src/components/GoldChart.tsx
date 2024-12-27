@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { toast } from "sonner";
 
 interface GoldPrice {
   price: number;
@@ -14,13 +14,14 @@ export const GoldChart = () => {
     queryKey: ["gold-price"],
     queryFn: async () => {
       console.log("Fetching gold price...");
-      const { data, error } = await supabase.functions.invoke("gold-stats");
+      const { data, error } = await supabase.functions.invoke<GoldPrice>("gold-stats");
       if (error) {
         console.error("Error fetching gold price:", error);
+        toast.error("Failed to fetch gold price. Please try again later.");
         throw error;
       }
       console.log("Received gold price data:", data);
-      return data as GoldPrice;
+      return data;
     },
     refetchInterval: 300000, // Refetch every 5 minutes
   });

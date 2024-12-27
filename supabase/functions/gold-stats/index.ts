@@ -21,6 +21,7 @@ serve(async (req) => {
     })
 
     if (!response.ok) {
+      console.error('Gold API error:', response.status, response.statusText)
       throw new Error(`Gold API responded with status: ${response.status}`)
     }
 
