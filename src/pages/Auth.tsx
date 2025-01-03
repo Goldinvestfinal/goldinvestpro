@@ -95,7 +95,7 @@ const Auth = () => {
               button: {
                 backgroundColor: '#B8860B',
                 color: '#FFFFFF',
-                '&:hover': {
+                ":hover": {
                   backgroundColor: '#8B6914',
                 },
               },
