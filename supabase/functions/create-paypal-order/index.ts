@@ -45,6 +45,11 @@ serve(async (req) => {
 
     const { access_token } = await tokenResponse.json()
 
+    if (!access_token) {
+      console.error('Failed to get PayPal access token')
+      throw new Error('Failed to get PayPal access token')
+    }
+
     // Create PayPal order
     const orderResponse = await fetch('https://api-m.sandbox.paypal.com/v2/checkout/orders', {
       method: 'POST',
@@ -68,14 +73,23 @@ serve(async (req) => {
       }),
     })
 
-    const order = await orderResponse.json()
-    console.log('PayPal order created:', order)
+    const orderData = await orderResponse.json()
+    console.log('PayPal order created:', orderData)
 
-    // Return the approval URL
-    const approvalUrl = order.links.find((link: any) => link.rel === 'approve').href
+    if (!orderData.links || !Array.isArray(orderData.links)) {
+      console.error('Invalid PayPal order response:', orderData)
+      throw new Error('Invalid PayPal order response')
+    }
+
+    // Find the approval URL
+    const approvalLink = orderData.links.find((link: any) => link.rel === 'approve')
+    if (!approvalLink || !approvalLink.href) {
+      console.error('No approval URL found in PayPal response:', orderData)
+      throw new Error('No PayPal approval URL found')
+    }
 
     return new Response(
-      JSON.stringify({ orderUrl: approvalUrl }),
+      JSON.stringify({ orderUrl: approvalLink.href }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
