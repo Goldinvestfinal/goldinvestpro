@@ -17,20 +17,28 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Compliance from "./pages/Compliance";
 import { Footer } from "./components/Footer";
+import { useToast } from "@/hooks/use-toast";
 
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Check initial session
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
         setIsAuthenticated(!!session);
       } catch (error) {
         console.error("Error checking session:", error);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "Please try signing in again.",
+        });
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
@@ -40,7 +48,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     checkSession();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setIsAuthenticated(!!session);
       setIsLoading(false);
     });
@@ -48,7 +56,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [toast]);
 
   if (isLoading) {
     return (

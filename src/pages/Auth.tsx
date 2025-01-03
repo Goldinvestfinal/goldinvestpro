@@ -3,10 +3,51 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { ChatAdvisor } from "@/components/ChatAdvisor";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
   // Get the current origin for the redirect URL
   const redirectTo = `${window.location.origin}/`;
+
+  useEffect(() => {
+    // Check if user is already authenticated
+    const checkUser = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Auth error:", error);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "Please try signing in again.",
+        });
+      }
+    };
+
+    checkUser();
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          navigate("/");
+        }
+      }
+    );
+
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen bg-background">
