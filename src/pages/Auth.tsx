@@ -95,10 +95,11 @@ const Auth = () => {
               button: {
                 backgroundColor: '#B8860B',
                 color: '#FFFFFF',
-                hover: {
-                  backgroundColor: '#8B6914',
-                },
+                transition: 'background-color 0.2s ease',
               },
+            },
+            className: {
+              button: 'hover:bg-[#8B6914]',
             },
           }}
           providers={[]}
