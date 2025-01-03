@@ -28,7 +28,6 @@ const Auth = () => {
               },
             },
           }}
-          providers={["google"]}
           redirectTo={redirectTo}
         />
       </div>

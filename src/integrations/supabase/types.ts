@@ -220,6 +220,7 @@ export type Database = {
         Row: {
           balance: number
           created_at: string
+          email: string | null
           id: string
           is_demo: boolean
           name: string | null
@@ -229,6 +230,7 @@ export type Database = {
         Insert: {
           balance?: number
           created_at?: string
+          email?: string | null
           id?: string
           is_demo?: boolean
           name?: string | null
@@ -238,6 +240,7 @@ export type Database = {
         Update: {
           balance?: number
           created_at?: string
+          email?: string | null
           id?: string
           is_demo?: boolean
           name?: string | null
