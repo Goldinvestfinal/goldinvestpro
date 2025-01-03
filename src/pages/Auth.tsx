@@ -65,7 +65,25 @@ const Auth = () => {
                 colors: {
                   brand: '#B8860B',
                   brandAccent: '#8B6914',
+                  inputText: '#FFFFFF',
+                  inputBackground: 'transparent',
+                  inputBorder: '#B8860B',
+                  inputLabelText: '#FFFFFF',
+                  inputPlaceholder: 'rgba(255, 255, 255, 0.5)',
                 },
+              },
+            },
+            style: {
+              input: {
+                color: '#FFFFFF',
+                backgroundColor: 'transparent',
+                border: '1px solid #B8860B',
+              },
+              label: {
+                color: '#FFFFFF',
+              },
+              message: {
+                color: '#FFFFFF',
               },
             },
           }}
