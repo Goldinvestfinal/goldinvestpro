@@ -69,7 +69,9 @@ const Auth = () => {
               },
             },
           }}
+          providers={[]}
           redirectTo={redirectTo}
+          view="magic_link"
         />
       </div>
       <ChatAdvisor />
