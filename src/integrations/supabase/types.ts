@@ -150,6 +150,7 @@ export type Database = {
           is_admin: boolean
           last_name: string | null
           name: string | null
+          phone: string | null
         }
         Insert: {
           created_at?: string
@@ -158,6 +159,7 @@ export type Database = {
           is_admin?: boolean
           last_name?: string | null
           name?: string | null
+          phone?: string | null
         }
         Update: {
           created_at?: string
@@ -166,6 +168,7 @@ export type Database = {
           is_admin?: boolean
           last_name?: string | null
           name?: string | null
+          phone?: string | null
         }
         Relationships: []
       }

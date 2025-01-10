@@ -104,7 +104,12 @@ const Auth = () => {
           }}
           providers={[]}
           redirectTo={redirectTo}
-          view="magic_link"
+          view="sign_up"
+          additionalData={{
+            first_name: '',
+            last_name: '',
+            phone: '',
+          }}
         />
       </div>
       <ChatAdvisor />
