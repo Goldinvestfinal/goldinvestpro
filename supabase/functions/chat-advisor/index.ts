@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import "https://deno.land/x/xhr@0.1.0/mod.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { Configuration, OpenAIApi } from 'https://esm.sh/openai@3.2.1'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,49 +8,59 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
+    // Get the request body
     const { message } = await req.json()
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a knowledgeable and persuasive gold investment advisor. Your goal is to educate users about the benefits of gold investment and help them make informed decisions. Focus on:
-            - Historical value and stability of gold
-            - Protection against inflation and economic uncertainty
-            - Portfolio diversification benefits
-            - Current market opportunities
-            Be professional but friendly, and avoid pushy sales tactics. Instead, educate and guide.`
-          },
-          {
-            role: 'user',
-            content: message
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 500,
-      }),
+    // Create OpenAI configuration
+    const configuration = new Configuration({
+      apiKey: Deno.env.get('OPENAI_API_KEY'),
     })
 
-    const data = await response.json()
-    return new Response(JSON.stringify({ reply: data.choices[0].message.content }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    const openai = new OpenAIApi(configuration)
+
+    // Create chat completion
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          "role": "system",
+          "content": "You are a knowledgeable gold investment advisor. Provide clear, concise advice about gold investments, market trends, and best practices. Keep responses focused on gold-related topics."
+        },
+        {
+          "role": "user",
+          "content": message
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 500,
     })
+
+    // Get the response
+    const reply = completion.data.choices[0].message?.content || "I apologize, but I couldn't generate a response. Please try again."
+
+    // Return the response
+    return new Response(
+      JSON.stringify({ reply }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      },
+    )
+
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    console.error('Error:', error)
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      },
+    )
   }
 })
