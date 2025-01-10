@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
@@ -29,29 +29,30 @@ export const ChatAdvisor = () => {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const response = await fetch(
-        'https://vnitnjwwldlujdjnnlvj.functions.supabase.co/chat-advisor',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.access_token}`,
-          },
-          body: JSON.stringify({ message: userMessage }),
-        }
-      );
+      // Get the current session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        throw new Error('Authentication required');
+      }
 
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
+      if (!session?.access_token) {
+        throw new Error('Please log in to use the chat');
+      }
+
+      const response = await supabase.functions.invoke('chat-advisor', {
+        body: { message: userMessage }
+      });
+
+      if (response.error) throw new Error(response.error.message);
 
       // Add AI response to chat
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: response.data.reply }]);
     } catch (error) {
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: "Failed to get a response. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to get a response. Please try again.",
         variant: "destructive",
       });
     } finally {
