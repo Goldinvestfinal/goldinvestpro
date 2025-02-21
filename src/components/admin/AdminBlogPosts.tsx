@@ -10,6 +10,7 @@ import { BlogPostEditor } from "./BlogPostEditor";
 interface BlogPost {
   id: string;
   title: string;
+  content: string;  // Added this required property
   excerpt: string;
   slug: string;
   created_at: string;
