@@ -7,6 +7,8 @@ import { GoldChart } from "@/components/GoldChart";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Helmet } from "react-helmet";
+
 interface BlogPost {
   id: string;
   title: string;
@@ -14,6 +16,7 @@ interface BlogPost {
   slug: string;
   created_at: string;
 }
+
 const Blog = () => {
   const {
     data: posts,
@@ -34,6 +37,7 @@ const Blog = () => {
       return data as BlogPost[];
     }
   });
+
   if (isLoading) {
     return <div className="min-h-screen bg-background">
         <Navbar />
@@ -56,6 +60,7 @@ const Blog = () => {
         </div>
       </div>;
   }
+
   return <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container mx-auto px-4 py-24">
@@ -99,4 +104,5 @@ const Blog = () => {
       </div>
     </div>;
 };
+
 export default Blog;

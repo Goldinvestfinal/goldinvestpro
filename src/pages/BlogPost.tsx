@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Helmet } from "react-helmet";
+import { Navbar } from "@/components/Navbar";
 
 interface BlogPost {
   title: string;
