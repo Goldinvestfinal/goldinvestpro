@@ -8,7 +8,6 @@ import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Helmet } from "react-helmet";
-
 interface BlogPost {
   id: string;
   title: string;
@@ -16,7 +15,6 @@ interface BlogPost {
   slug: string;
   created_at: string;
 }
-
 const Blog = () => {
   const {
     data: posts,
@@ -37,7 +35,6 @@ const Blog = () => {
       return data as BlogPost[];
     }
   });
-
   if (isLoading) {
     return <div className="min-h-screen bg-background">
         <Navbar />
@@ -60,12 +57,11 @@ const Blog = () => {
         </div>
       </div>;
   }
-
   return <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 py-24">
+      <div className="container mx-auto px-4 py-24 bg-white">
         <div className="flex justify-between items-center mb-12">
-          <h1 className="text-4xl font-bold">Gold Investment Blog</h1>
+          <h1 className="text-4xl font-bold text-black">Gold Investment Blog</h1>
           <div className="flex gap-4">
             
             
@@ -104,5 +100,4 @@ const Blog = () => {
       </div>
     </div>;
 };
-
 export default Blog;
