@@ -10,7 +10,7 @@ import { BlogPostEditor } from "./BlogPostEditor";
 interface BlogPost {
   id: string;
   title: string;
-  content: string;  // Added this required property
+  content: string;  // Added content property
   excerpt: string;
   slug: string;
   created_at: string;
@@ -25,7 +25,7 @@ export const AdminBlogPosts = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("blog_posts")
-        .select("*")
+        .select("id, title, content, excerpt, slug, created_at") // Explicitly select all needed fields
         .order("created_at", { ascending: false });
 
       if (error) throw error;
