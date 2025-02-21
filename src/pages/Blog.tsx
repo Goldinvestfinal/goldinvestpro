@@ -62,30 +62,24 @@ const Blog = () => {
         <div className="flex justify-between items-center mb-12">
           <h1 className="text-4xl font-bold">Gold Investment Blog</h1>
           <div className="flex gap-4">
-            <Button variant="outline" size="sm" className="mx-[20px]">
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Previous
-            </Button>
-            <Button variant="outline" size="sm" className="px-[15px]">
-              Next
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
+            
+            
           </div>
         </div>
         <div className="mb-12">
           <GoldChart />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white">
           {posts?.map(post => <Link to={`/blog/${post.slug}`} key={post.id}>
               <Card className="h-full hover:shadow-lg transition-shadow border-gold/20 hover:border-gold/40">
-                <CardHeader>
-                  <CardTitle className="text-xl mb-2">{post.title}</CardTitle>
-                  <CardDescription>
+                <CardHeader className="bg-inherit">
+                  <CardTitle className="text-xl mb-2 text-black">{post.title}</CardTitle>
+                  <CardDescription className="text-black">
                     {new Date(post.created_at).toLocaleDateString()}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">{post.excerpt}</p>
+                  <p className="text-muted-foreground text-black">{post.excerpt}</p>
                 </CardContent>
               </Card>
             </Link>)}
