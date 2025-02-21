@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,9 +50,14 @@ export const Navbar = () => {
             </Link>
 
             {isAuthenticated && (
-              <Link to="/wallet" className={`${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
-                Wallet
-              </Link>
+              <>
+                <Link to="/dashboard" className={`${isActive('/dashboard') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
+                  Dashboard
+                </Link>
+                <Link to="/wallet" className={`${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
+                  Wallet
+                </Link>
+              </>
             )}
 
             {isAuthenticated ? (
@@ -85,9 +91,14 @@ export const Navbar = () => {
                 Blog
               </Link>
               {isAuthenticated && (
-                <Link to="/wallet" className={`block px-3 py-2 ${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
-                  Wallet
-                </Link>
+                <>
+                  <Link to="/dashboard" className={`block px-3 py-2 ${isActive('/dashboard') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
+                    Dashboard
+                  </Link>
+                  <Link to="/wallet" className={`block px-3 py-2 ${isActive('/wallet') ? 'text-gold' : 'text-gray-300'} hover:text-gold transition-colors`}>
+                    Wallet
+                  </Link>
+                </>
               )}
               {isAuthenticated ? (
                 <Button onClick={handleLogout} className="w-full bg-gold hover:bg-gold-dark text-black mt-4">

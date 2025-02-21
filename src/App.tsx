@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -16,6 +17,8 @@ import Wallet from "./pages/Wallet";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Compliance from "./pages/Compliance";
+import Dashboard from "./pages/Dashboard";
+import Admin from "./pages/Admin";
 import { Footer } from "./components/Footer";
 import { useToast } from "@/hooks/use-toast";
 
@@ -109,6 +112,22 @@ const App: React.FC = () => {
                     element={
                       <ProtectedRoute>
                         <Wallet />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute>
+                        <Admin />
                       </ProtectedRoute>
                     }
                   />
