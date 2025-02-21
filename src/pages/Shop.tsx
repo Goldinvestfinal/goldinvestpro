@@ -69,7 +69,7 @@ const Shop = () => {
       {/* Hero Section */}
       <div className="relative h-[300px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black">
-          <img src="/lovable-uploads/7798e27a-edc7-4260-aa26-01a7b75992c6.png" alt="Gold Investment" className="w-full h-full object-cover opacity-50" />
+          <img src="/lovable-uploads/7798e27a-edc7-4260-aa26-01a7b75992c6.png" alt="Gold Investment" className="w-full h-full opacity-50 object-cover" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
           <h1 className="text-5xl font-bold text-gold mb-4">Premium Gold Collection</h1>
@@ -81,9 +81,7 @@ const Shop = () => {
       </div>
 
       {/* Price Chart Section */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <PriceHistoryChart />
-      </div>
+      
 
       {/* Filters Section */}
       <div className="bg-gray-900/50 border-y border-gold/20">
