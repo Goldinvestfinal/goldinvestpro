@@ -7,7 +7,6 @@ import { GoldChart } from "@/components/GoldChart";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
 interface BlogPost {
   id: string;
   title: string;
@@ -15,28 +14,28 @@ interface BlogPost {
   slug: string;
   created_at: string;
 }
-
 const Blog = () => {
-  const { data: posts, isLoading } = useQuery({
+  const {
+    data: posts,
+    isLoading
+  } = useQuery({
     queryKey: ["blog-posts"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .select("id, title, excerpt, slug, created_at")
-        .order("created_at", { ascending: false });
-
+      const {
+        data,
+        error
+      } = await supabase.from("blog_posts").select("id, title, excerpt, slug, created_at").order("created_at", {
+        ascending: false
+      });
       if (error) {
         console.error("Error fetching blog posts:", error);
         throw error;
       }
-
       return data as BlogPost[];
-    },
+    }
   });
-
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
+    return <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container mx-auto px-4 py-24">
           <h1 className="text-4xl font-bold mb-12">Gold Investment Blog</h1>
@@ -44,8 +43,7 @@ const Blog = () => {
             <Skeleton className="h-[400px] w-full" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="hover:shadow-lg transition-shadow">
+            {[1, 2, 3].map(i => <Card key={i} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <Skeleton className="h-8 w-3/4 mb-2" />
                   <Skeleton className="h-4 w-full" />
@@ -53,26 +51,22 @@ const Blog = () => {
                 <CardContent>
                   <Skeleton className="h-20 w-full" />
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container mx-auto px-4 py-24">
         <div className="flex justify-between items-center mb-12">
           <h1 className="text-4xl font-bold">Gold Investment Blog</h1>
           <div className="flex gap-4">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="mx-[20px]">
               <ChevronLeft className="mr-2 h-4 w-4" />
               Previous
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="px-[15px]">
               Next
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
@@ -82,8 +76,7 @@ const Blog = () => {
           <GoldChart />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts?.map((post) => (
-            <Link to={`/blog/${post.slug}`} key={post.id}>
+          {posts?.map(post => <Link to={`/blog/${post.slug}`} key={post.id}>
               <Card className="h-full hover:shadow-lg transition-shadow border-gold/20 hover:border-gold/40">
                 <CardHeader>
                   <CardTitle className="text-xl mb-2">{post.title}</CardTitle>
@@ -95,8 +88,7 @@ const Blog = () => {
                   <p className="text-muted-foreground">{post.excerpt}</p>
                 </CardContent>
               </Card>
-            </Link>
-          ))}
+            </Link>)}
         </div>
         <div className="flex justify-center mt-12">
           <div className="flex gap-4">
@@ -111,8 +103,6 @@ const Blog = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Blog;
