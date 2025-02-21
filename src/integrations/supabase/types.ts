@@ -318,6 +318,12 @@ export type Database = {
         }
         Returns: number
       }
+      is_admin: {
+        Args: {
+          user_id: string
+        }
+        Returns: boolean
+      }
       log_user_activity: {
         Args: {
           user_id: string
