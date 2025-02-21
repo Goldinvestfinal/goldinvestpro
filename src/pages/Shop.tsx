@@ -84,12 +84,12 @@ const Shop = () => {
       
 
       {/* Filters Section */}
-      <div className="bg-gray-900/50 border-y border-gold/20">
+      <div className="border-y border-gold/20 bg-white">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input type="text" placeholder="Search products..." className="w-full pl-10 pr-4 py-2 border border-gold/20 rounded-lg text-gray-200 placeholder-gray-400 focus:outline-none focus:border-gold/40 bg-white" />
+              <input type="text" placeholder="Search products..." className="w-full pl-10 pr-4 py-2 border border-gold/20 rounded-lg text-gray-200 placeholder-gray-400 focus:outline-none focus:border-gold/40 bg-zinc-950 hover:bg-zinc-800" />
             </div>
             
             <div className="flex gap-4">
