@@ -1,8 +1,6 @@
 import { Shield, Lock, TrendingUp } from "lucide-react";
-
 export const GoldFeatures = () => {
-  return (
-    <section className="bg-background py-24 px-4">
+  return <section className="bg-background py-24 px-4 bg-zinc-50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-serif text-gold">
@@ -30,6 +28,5 @@ export const GoldFeatures = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
