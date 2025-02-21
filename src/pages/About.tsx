@@ -25,10 +25,10 @@ const About = () => {
       </section>
 
       {/* Mission Section */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-gold mb-6">Our Mission</h2>
-          <p className="text-gray-300 leading-relaxed">
+          <p className="leading-relaxed text-black">
             Our mission is simple: to empower individuals to build wealth and stability by incorporating gold and precious metals into their diversified portfolios. We are dedicated to making gold investment accessible, secure, and profitable for everyone.
           </p>
         </div>
