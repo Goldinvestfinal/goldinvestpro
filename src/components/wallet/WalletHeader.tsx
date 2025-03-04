@@ -1,48 +1,37 @@
-
-import { CreditCard, DollarSign, TrendingUp } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 
 interface WalletHeaderProps {
-  balance: number;
-  currency: string;
-  isDemo: boolean;
+  isRealWallet: boolean;
+  setIsRealWallet: (value: boolean) => void;
+  currentBalance: number;
 }
 
-export const WalletHeader = ({ balance, currency, isDemo }: WalletHeaderProps) => {
+export const WalletHeader = ({
+  isRealWallet,
+  setIsRealWallet,
+  currentBalance,
+}: WalletHeaderProps) => {
   return (
-    <Card className={`border ${isDemo ? 'border-blue-500/30 bg-blue-500/5' : 'border-gold/30 bg-gold/5'}`}>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold mb-1 flex items-center">
-              {isDemo ? (
-                <>
-                  <CreditCard className="mr-2 h-5 w-5 text-blue-400" />
-                  <span>Demo Wallet</span>
-                </>
-              ) : (
-                <>
-                  <DollarSign className="mr-2 h-5 w-5 text-gold" />
-                  <span>Real Money Wallet</span>
-                </>
-              )}
-            </h2>
-            <div className="text-3xl font-bold">
-              {currency} {balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-            <p className="text-sm text-muted-foreground mt-1">
-              {isDemo 
-                ? "Practice with virtual funds - no real money involved"
-                : "Your actual balance for real transactions"
-              }
-            </p>
-          </div>
-          
-          <div className={`text-2xl font-bold ${isDemo ? 'text-blue-400' : 'text-gold'}`}>
-            <TrendingUp size={32} />
-          </div>
+    <div className="mb-8 mt-12 lg:mt-0">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+        <div>
+          <h2 className="text-2xl mb-2 text-amber-400">Wallet Overview</h2>
+          <p className="text-amber-400/80">Manage your investments effortlessly</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-amber-400/80">
+            {isRealWallet ? "Real Wallet" : "Demo Wallet"}
+          </span>
+          <Switch checked={isRealWallet} onCheckedChange={setIsRealWallet} />
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-br from-amber-900/20 to-amber-800/10 border border-amber-900/20 rounded-lg p-6 mb-6 backdrop-blur-sm">
+        <h3 className="text-lg mb-2 text-amber-400">Current Balance</h3>
+        <h1 className="text-4xl font-bold text-amber-400">
+          ${currentBalance.toLocaleString()}
+        </h1>
+      </div>
+    </div>
   );
 };

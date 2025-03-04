@@ -1,263 +1,107 @@
-
 import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { DollarSign } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Download } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { WithdrawalMethodList } from "./WithdrawalMethodList";
 import { WithdrawalMethodForm } from "./WithdrawalMethodForm";
 
-interface WithdrawalSheetProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  walletId: string | number;
-  isDemo: boolean;
-  onSuccess: () => Promise<void>;
-}
-
-const formSchema = z.object({
-  amount: z.string()
-    .min(1, "Amount is required")
-    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-      message: "Amount must be a positive number",
-    }),
-  methodId: z.string().optional(),
-});
-
-export const WithdrawalSheet = ({ open, onOpenChange, walletId, isDemo, onSuccess }: WithdrawalSheetProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [step, setStep] = useState<"amount" | "method" | "add-method">("amount");
+export const WithdrawalSheet = () => {
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [isAddingMethod, setIsAddingMethod] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      amount: "",
-      methodId: undefined,
-    },
-  });
-
-  // Get current balance
-  const { data: wallet } = useQuery({
-    queryKey: ["wallet", walletId],
+  const { data: withdrawalMethods, refetch: refetchMethods } = useQuery({
+    queryKey: ["withdrawalMethods"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("wallets")
-        .select("balance")
-        .eq("id", walletId)
-        .single();
+        .from("withdrawal_methods")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
     },
-    enabled: open,
   });
 
-  // Get withdrawal methods
-  const { data: withdrawalMethods, refetch: refetchMethods } = useQuery({
-    queryKey: ["withdrawal-methods"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data, error } = await supabase
-        .from("withdrawal_methods")
-        .select("*")
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: open && step === "method",
-  });
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsSubmitting(true);
-      
-      const amount = Number(values.amount);
-      const balance = wallet?.balance || 0;
-      
-      // Check if sufficient balance
-      if (amount > balance) {
-        toast({
-          variant: "destructive",
-          title: "Insufficient Balance",
-          description: `You only have $${balance.toLocaleString()} available.`,
-        });
-        setIsSubmitting(false);
-        return;
-      }
-      
-      // For a real app, you would integrate with a payment processor here
-      // For now, we'll just create a transaction and update the balance
-      
-      // 1. Create a transaction record
-      const { data: transactionData, error: transactionError } = await supabase
-        .from("transactions")
-        .insert({
-          wallet_id: walletId,
-          type: "withdrawal",
-          amount: amount,
-          status: isDemo ? "completed" : "pending", // Demo transactions complete instantly
-          details: isDemo ? "Demo withdrawal" : `Withdrawal to ${values.methodId}`,
-        })
-        .select();
-
-      if (transactionError) throw transactionError;
-
-      // 2. Update wallet balance immediately for demo wallets
-      if (isDemo) {
-        const { error: walletError } = await supabase
-          .from("wallets")
-          .update({ balance: supabase.rpc("decrement_balance", { amount_to_subtract: amount, wallet_id_param: walletId }) })
-          .eq("id", walletId);
-
-        if (walletError) throw walletError;
-      }
-
-      await onSuccess();
-      onOpenChange(false);
-      setStep("amount");
-      form.reset();
-
+  const handleWithdrawal = async () => {
+    if (!selectedMethod) {
       toast({
-        title: isDemo ? "Withdrawal Successful" : "Withdrawal Initiated",
-        description: isDemo 
-          ? `$${amount} has been withdrawn from your demo wallet.`
-          : `Your withdrawal of $${amount} has been initiated and is pending approval.`,
-      });
-      
-    } catch (error) {
-      console.error("Withdrawal error:", error);
-      toast({
+        title: "Error",
+        description: "Please select a withdrawal method",
         variant: "destructive",
-        title: "Withdrawal Failed",
-        description: "There was an error processing your withdrawal. Please try again.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleContinue = () => {
-    if (!form.watch("amount") || Number(form.watch("amount")) <= 0) {
-      form.setError("amount", { 
-        type: "manual", 
-        message: "Please enter a valid amount" 
       });
       return;
     }
 
-    const amount = Number(form.watch("amount"));
-    const balance = wallet?.balance || 0;
-    
-    if (amount > balance) {
-      form.setError("amount", { 
-        type: "manual", 
-        message: `Insufficient balance. Available: $${balance.toLocaleString()}` 
-      });
-      return;
-    }
-
-    if (isDemo) {
-      // For demo wallets, we can skip the method selection
-      onSubmit(form.getValues());
-    } else {
-      setStep("method");
-    }
-  };
-
-  const handleMethodSelect = (methodId: string) => {
-    form.setValue("methodId", methodId);
-    onSubmit(form.getValues());
-  };
-
-  const handleAddMethodSuccess = async () => {
-    await refetchMethods();
-    setStep("method");
-  };
-
-  const resetSheet = () => {
-    setStep("amount");
-    form.reset();
+    // Here you would implement the actual withdrawal logic
+    toast({
+      title: "Withdrawal initiated",
+      description: "Your withdrawal request has been submitted",
+    });
   };
 
   return (
-    <Sheet open={open} onOpenChange={(newOpen) => {
-      if (!newOpen) resetSheet();
-      onOpenChange(newOpen);
-    }}>
-      <SheetContent className="sm:max-w-md">
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button 
+          className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white border-none" 
+          variant="outline"
+        >
+          <Download className="mr-2" /> Withdraw Funds
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="bg-black border-amber-900/20">
         <SheetHeader>
-          <SheetTitle>Withdraw Funds</SheetTitle>
-          <SheetDescription>
-            {isDemo
-              ? "Withdraw virtual funds from your demo wallet."
-              : "Withdraw funds from your wallet to your bank account."}
+          <SheetTitle className="text-amber-400">Withdraw Funds</SheetTitle>
+          <SheetDescription className="text-amber-400/80">
+            Withdraw your funds to your preferred payment method
           </SheetDescription>
         </SheetHeader>
 
-        <div className="py-6">
-          {step === "amount" && (
-            <Form {...form}>
-              <form onSubmit={(e) => { e.preventDefault(); handleContinue(); }} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="amount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Amount</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                          <Input 
-                            {...field} 
-                            placeholder="Enter amount" 
-                            className="pl-9" 
-                            type="number"
-                            min="0"
-                            step="0.01"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+        <div className="mt-6 space-y-6">
+          {!isAddingMethod ? (
+            <>
+              <WithdrawalMethodList
+                methods={withdrawalMethods || []}
+                selectedMethod={selectedMethod}
+                onSelectMethod={setSelectedMethod}
+                onAddNew={() => setIsAddingMethod(true)}
+              />
 
-                <div className="text-sm text-muted-foreground">
-                  Available balance: ${wallet?.balance?.toLocaleString() || "0"}
-                </div>
+              <Button
+                onClick={handleWithdrawal}
+                disabled={!selectedMethod}
+                className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white"
+              >
+                Withdraw Funds
+              </Button>
 
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Processing..." : "Continue"}
-                </Button>
-              </form>
-            </Form>
-          )}
-
-          {step === "method" && (
-            <WithdrawalMethodList 
-              methods={withdrawalMethods || []} 
-              onSelect={handleMethodSelect}
-              onAddNew={() => setStep("add-method")}
-              onBack={() => setStep("amount")}
-            />
-          )}
-
-          {step === "add-method" && (
-            <WithdrawalMethodForm 
-              onSuccess={handleAddMethodSuccess}
-              onCancel={() => setStep("method")}
+              <div className="space-y-2 pt-4 border-t border-amber-900/20">
+                <p className="text-sm text-amber-400/80">Important Notes:</p>
+                <ul className="text-xs space-y-2 text-amber-400/60">
+                  <li>• Minimum withdrawal amount: $100</li>
+                  <li>• Processing time: 1-3 business days</li>
+                  <li>• Verify your withdrawal address carefully</li>
+                </ul>
+              </div>
+            </>
+          ) : (
+            <WithdrawalMethodForm
+              onSuccess={() => {
+                setIsAddingMethod(false);
+                refetchMethods();
+              }}
+              onCancel={() => setIsAddingMethod(false)}
             />
           )}
         </div>

@@ -1,100 +1,78 @@
 
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Helmet } from "react-helmet";
-import { Navbar } from "@/components/Navbar";
-import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { Button } from "@/components/ui/button";
+import { AdminBlogPosts } from "@/components/admin/AdminBlogPosts";
 import { AdminWallets } from "@/components/admin/AdminWallets";
 import { AdminTransactions } from "@/components/admin/AdminTransactions";
-import { AdminBlogPosts } from "@/components/admin/AdminBlogPosts";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  
+  // Check if user is admin
+  const { data: isAdmin, isLoading: checkingAdmin } = useQuery({
+    queryKey: ['check-admin'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+      
+      if (error || !data) return false;
+      return data.is_admin;
+    },
+  });
 
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          setIsAdmin(false);
-          setIsLoading(false);
-          return;
-        }
+    if (!checkingAdmin && !isAdmin) {
+      navigate('/');
+    }
+  }, [isAdmin, checkingAdmin, navigate]);
 
-        // Check if user is in the 'admins' table or has admin role
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single();
-
-        if (error) throw error;
-        
-        // Check if role is admin
-        setIsAdmin(data?.role === 'admin');
-        setIsLoading(false);
-
-      } catch (error) {
-        console.error("Error checking admin status:", error);
-        setIsAdmin(false);
-        setIsLoading(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [navigate]);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold"></div>
-      </div>
-    );
+  if (checkingAdmin) {
+    return <div>Loading...</div>;
   }
 
   if (!isAdmin) {
-    navigate("/dashboard");
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="container mx-auto px-4 py-8">
       <Helmet>
         <title>Admin Dashboard - GoldInvestPro</title>
       </Helmet>
-      <Navbar />
-      <div className="container mx-auto px-4 py-24">
-        <h1 className="text-4xl font-bold mb-8">Admin Dashboard</h1>
 
-        <Tabs defaultValue="dashboard" className="space-y-8">
-          <TabsList className="grid grid-cols-4 w-full max-w-2xl">
-            <TabsTrigger value="dashboard">Overview</TabsTrigger>
-            <TabsTrigger value="wallets">Wallets</TabsTrigger>
-            <TabsTrigger value="transactions">Transactions</TabsTrigger>
-            <TabsTrigger value="blog">Blog Posts</TabsTrigger>
-          </TabsList>
+      <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
-          <TabsContent value="dashboard">
-            <AdminDashboard />
-          </TabsContent>
+      <Tabs defaultValue="blog" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="blog">Blog Posts</TabsTrigger>
+          <TabsTrigger value="wallets">Wallets</TabsTrigger>
+          <TabsTrigger value="transactions">Transactions</TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="wallets">
-            <AdminWallets />
-          </TabsContent>
+        <TabsContent value="blog">
+          <AdminBlogPosts />
+        </TabsContent>
 
-          <TabsContent value="transactions">
-            <AdminTransactions />
-          </TabsContent>
+        <TabsContent value="wallets">
+          <AdminWallets />
+        </TabsContent>
 
-          <TabsContent value="blog">
-            <AdminBlogPosts />
-          </TabsContent>
-        </Tabs>
-      </div>
+        <TabsContent value="transactions">
+          <AdminTransactions />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
