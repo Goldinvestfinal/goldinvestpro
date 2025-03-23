@@ -306,6 +306,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrement_balance: {
+        Args: {
+          wallet_id: string
+          amount: number
+        }
+        Returns: undefined
+      }
       delete_user_profile: {
         Args: {
           user_id: string
@@ -317,6 +324,13 @@ export type Database = {
           user_id: string
         }
         Returns: number
+      }
+      increment_balance: {
+        Args: {
+          wallet_id: string
+          amount: number
+        }
+        Returns: undefined
       }
       is_admin: {
         Args: {

@@ -4,7 +4,7 @@ import { WalletHeader } from "./wallet/WalletHeader";
 import { QuickActions } from "./wallet/QuickActions";
 import { TransactionHistory } from "./wallet/TransactionHistory";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "./ui/use-toast";
 
 interface Transaction {
@@ -19,6 +19,7 @@ export const WalletDashboard = () => {
   const [isRealWallet, setIsRealWallet] = useState(false);
   const [currentWallet, setCurrentWallet] = useState<any>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Fetch user's wallets
   const { data: wallets, isLoading: isLoadingWallets } = useQuery({
@@ -64,15 +65,17 @@ export const WalletDashboard = () => {
   }, [wallets, isRealWallet]);
 
   const handleTransactionSuccess = () => {
-    // Refetch data
+    // Refetch the transactions and wallet data
+    queryClient.invalidateQueries({ queryKey: ["transactions", currentWallet?.id] });
+    queryClient.invalidateQueries({ queryKey: ["wallets"] });
   };
 
   return (
     <div>
       <WalletHeader 
-        currentBalance={currentWallet?.balance || 0}
         isRealWallet={isRealWallet}
         setIsRealWallet={setIsRealWallet}
+        currentBalance={currentWallet?.balance || 0}
       />
       
       {currentWallet && (

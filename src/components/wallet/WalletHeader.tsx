@@ -1,3 +1,4 @@
+
 import { Switch } from "@/components/ui/switch";
 
 interface WalletHeaderProps {

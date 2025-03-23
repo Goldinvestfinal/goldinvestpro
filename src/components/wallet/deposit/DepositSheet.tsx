@@ -14,7 +14,6 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
-import { useForm } from "react-hook-form";
 
 interface DepositSheetProps {
   walletId: string;
@@ -62,14 +61,7 @@ export const DepositSheet = ({ walletId, isDemo, onSuccess }: DepositSheetProps)
 
       if (transactionError) throw transactionError;
 
-      // Update wallet balance
-      const { data, error: walletError } = await supabase
-        .from("wallets")
-        .update({ balance: supabase.rpc('get_user_wallet_balance', { user_id: walletId }) + parseFloat(amount) })
-        .eq("id", walletId)
-        .select();
-
-      if (walletError) throw walletError;
+      // The wallet balance will be automatically updated by the trigger we created
 
       toast({
         title: "Deposit successful",
