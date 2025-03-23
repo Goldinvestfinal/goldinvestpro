@@ -1,3 +1,4 @@
+
 export interface WithdrawalMethod {
   id: string;
   user_id?: string;
