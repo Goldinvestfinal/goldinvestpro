@@ -1,55 +1,52 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
 
-const withdrawalMethodSchema = z.object({
-  method: z.enum(["crypto", "paypal", "bank"] as const),
-  label: z.string().min(1, "Label is required"),
-  address: z.string().min(1, "Address is required"),
-});
+export interface WithdrawalMethod {
+  id: string;
+  user_id: string;
+  method: "bank" | "paypal" | "crypto";
+  label: string;
+  address: string;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
-type WithdrawalMethodFormValues = z.infer<typeof withdrawalMethodSchema>;
+export interface WithdrawalMethodFormProps {
+  onComplete: (newMethod: WithdrawalMethod) => void;
+}
 
-type WithdrawalMethodFormProps = {
-  onSuccess: () => void;
-  onCancel: () => void;
-};
+export const WithdrawalMethodForm = ({ onComplete }: WithdrawalMethodFormProps) => {
+  const [methodType, setMethodType] = useState<"bank" | "paypal" | "crypto">("bank");
+  const [label, setLabel] = useState("");
+  const [address, setAddress] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-export const WithdrawalMethodForm = ({ onSuccess, onCancel }: WithdrawalMethodFormProps) => {
-  const { toast } = useToast();
-  const form = useForm<WithdrawalMethodFormValues>({
-    resolver: zodResolver(withdrawalMethodSchema),
-    defaultValues: {
-      method: "crypto",
-      label: "",
-      address: "",
-    },
-  });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  const onSubmit = async (values: WithdrawalMethodFormValues) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error("User not authenticated");
-      }
+      if (!user) throw new Error("User not authenticated");
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("withdrawal_methods")
         .insert({
           user_id: user.id,
-          method: values.method,
-          label: values.label,
-          address: values.address,
-        });
+          method: methodType,
+          label,
+          address,
+          is_default: false,
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
@@ -57,130 +54,82 @@ export const WithdrawalMethodForm = ({ onSuccess, onCancel }: WithdrawalMethodFo
         title: "Success",
         description: "Withdrawal method added successfully",
       });
-      
-      form.reset();
-      onSuccess();
+
+      if (data) {
+        onComplete(data);
+      }
     } catch (error) {
       console.error("Error adding withdrawal method:", error);
       toast({
-        title: "Error",
-        description: "Failed to add withdrawal method",
         variant: "destructive",
+        title: "Error",
+        description: "Failed to add withdrawal method. Please try again.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="method"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-amber-400">Method</FormLabel>
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="grid grid-cols-3 gap-4"
-              >
-                <div>
-                  <RadioGroupItem
-                    value="crypto"
-                    id="crypto"
-                    className="peer sr-only"
-                  />
-                  <Label
-                    htmlFor="crypto"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-amber-900/20 bg-black p-4 hover:bg-amber-900/10 peer-data-[state=checked]:border-amber-400 cursor-pointer"
-                  >
-                    <span className="text-sm font-medium text-amber-400">Crypto</span>
-                  </Label>
-                </div>
-                <div>
-                  <RadioGroupItem
-                    value="paypal"
-                    id="paypal"
-                    className="peer sr-only"
-                  />
-                  <Label
-                    htmlFor="paypal"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-amber-900/20 bg-black p-4 hover:bg-amber-900/10 peer-data-[state=checked]:border-amber-400 cursor-pointer"
-                  >
-                    <span className="text-sm font-medium text-amber-400">PayPal</span>
-                  </Label>
-                </div>
-                <div>
-                  <RadioGroupItem
-                    value="bank"
-                    id="bank"
-                    className="peer sr-only"
-                  />
-                  <Label
-                    htmlFor="bank"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-amber-900/20 bg-black p-4 hover:bg-amber-900/10 peer-data-[state=checked]:border-amber-400 cursor-pointer"
-                  >
-                    <span className="text-sm font-medium text-amber-400">Bank</span>
-                  </Label>
-                </div>
-              </RadioGroup>
-            </FormItem>
-          )}
-        />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label>Method Type</Label>
+        <RadioGroup
+          value={methodType}
+          onValueChange={(value) => setMethodType(value as "bank" | "paypal" | "crypto")}
+          className="flex flex-col space-y-2"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="bank" id="bank" />
+            <Label htmlFor="bank">Bank Transfer</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="paypal" id="paypal" />
+            <Label htmlFor="paypal">PayPal</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="crypto" id="crypto" />
+            <Label htmlFor="crypto">Cryptocurrency</Label>
+          </div>
+        </RadioGroup>
+      </div>
 
-        <FormField
-          control={form.control}
-          name="label"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-amber-400">Label</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  className="bg-amber-900/10 border-amber-900/20 text-amber-400"
-                  placeholder="e.g., My Binance Wallet"
-                />
-              </FormControl>
-              <FormMessage className="text-red-400" />
-            </FormItem>
-          )}
+      <div className="space-y-2">
+        <Label htmlFor="label">Label (e.g., "My Bank Account")</Label>
+        <Input
+          id="label"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          required
         />
+      </div>
 
-        <FormField
-          control={form.control}
-          name="address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-amber-400">Address</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  className="bg-amber-900/10 border-amber-900/20 text-amber-400"
-                  placeholder="Enter withdrawal address"
-                />
-              </FormControl>
-              <FormMessage className="text-red-400" />
-            </FormItem>
-          )}
+      <div className="space-y-2">
+        <Label htmlFor="address">
+          {methodType === "bank"
+            ? "Account Number"
+            : methodType === "paypal"
+              ? "PayPal Email"
+              : "Wallet Address"}
+        </Label>
+        <Input
+          id="address"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          required
+          placeholder={
+            methodType === "bank"
+              ? "XXXXXXXXXXXXXXXX"
+              : methodType === "paypal"
+                ? "email@example.com"
+                : "0x..."
+          }
         />
+      </div>
 
-        <div className="flex gap-2 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            className="flex-1 text-amber-400 border-amber-900/20 hover:bg-amber-900/10"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className="flex-1 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white"
-          >
-            Add Method
-          </Button>
-        </div>
-      </form>
-    </Form>
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? "Adding..." : "Add Method"}
+      </Button>
+    </form>
   );
 };

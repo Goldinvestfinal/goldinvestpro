@@ -1,69 +1,56 @@
+
+import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { WithdrawalMethod } from "@/types/wallet";
+import { WithdrawalMethod } from "./WithdrawalMethodForm";
 
-type WithdrawalMethodListProps = {
+export interface WithdrawalMethodListProps {
   methods: WithdrawalMethod[];
-  selectedMethod: string | null;
-  onSelectMethod: (methodId: string) => void;
-  onAddNew: () => void;
-};
+  selectedMethod: WithdrawalMethod | null;
+  onSelect: (method: WithdrawalMethod) => void;
+}
 
 export const WithdrawalMethodList = ({
   methods,
   selectedMethod,
-  onSelectMethod,
-  onAddNew,
+  onSelect,
 }: WithdrawalMethodListProps) => {
-  return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-sm font-medium text-amber-400">Withdrawal Methods</h3>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onAddNew}
-          className="text-amber-400 border-amber-900/20 hover:bg-amber-900/10"
-        >
-          <Plus className="h-4 w-4 mr-1" /> Add New
-        </Button>
+  if (methods.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p className="text-muted-foreground">No withdrawal methods added yet.</p>
       </div>
+    );
+  }
 
-      <RadioGroup
-        value={selectedMethod || ""}
-        onValueChange={onSelectMethod}
-        className="space-y-2"
-      >
-        {methods?.map((method) => (
-          <div
-            key={method.id}
-            className="flex items-center space-x-2 rounded-lg border border-amber-900/20 p-4"
-          >
-            <RadioGroupItem
-              value={method.id}
-              id={method.id}
-              className="border-amber-400 text-amber-400"
-            />
-            <Label
-              htmlFor={method.id}
-              className="flex-1 cursor-pointer text-amber-400"
-            >
-              <div className="font-medium">{method.label}</div>
-              <div className="text-sm text-amber-400/60">
-                {method.method} - {method.address}
-              </div>
-            </Label>
-          </div>
-        ))}
-      </RadioGroup>
-
-      {methods?.length === 0 && (
-        <div className="text-center py-6 text-amber-400/60">
-          No withdrawal methods added yet
+  return (
+    <RadioGroup
+      value={selectedMethod?.id}
+      onValueChange={(value) => {
+        const method = methods.find(m => m.id === value);
+        if (method) onSelect(method);
+      }}
+      className="space-y-3"
+    >
+      {methods.map((method) => (
+        <div
+          key={method.id}
+          className="flex items-center space-x-2 border p-3 rounded-lg"
+        >
+          <RadioGroupItem value={method.id} id={method.id} />
+          <Label htmlFor={method.id} className="flex-1 cursor-pointer">
+            <div className="font-medium">{method.label}</div>
+            <div className="text-sm text-muted-foreground">
+              {method.method === "bank"
+                ? "Bank Account"
+                : method.method === "paypal"
+                  ? "PayPal"
+                  : "Cryptocurrency"}
+            </div>
+            <div className="text-sm mt-1 font-mono">{method.address}</div>
+          </Label>
         </div>
-      )}
-    </div>
+      ))}
+    </RadioGroup>
   );
 };

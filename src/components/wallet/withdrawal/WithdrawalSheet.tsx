@@ -1,49 +1,45 @@
-
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
-import { ArrowDownToLine, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowDownToLine, ArrowLeft, Loader2, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Label } from "@/components/ui/label";
+import { WithdrawalMethodForm, WithdrawalMethod } from "./WithdrawalMethodForm";
 import { WithdrawalMethodList } from "./WithdrawalMethodList";
-import { WithdrawalMethodForm } from "./WithdrawalMethodForm";
-import { WithdrawalMethod } from "@/types/wallet";
 
-interface WithdrawalSheetProps {
+export interface QuickActionsProps {
   walletId: string;
   isDemo: boolean;
   onSuccess: () => void;
 }
 
-export const WithdrawalSheet = ({
-  walletId,
-  isDemo,
-  onSuccess,
-}: WithdrawalSheetProps) => {
-  const [amount, setAmount] = useState<string>("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isAddingMethod, setIsAddingMethod] = useState(false);
-  const [withdrawalMethods, setWithdrawalMethods] = useState<WithdrawalMethod[]>(
-    []
-  );
-  const [selectedMethod, setSelectedMethod] = useState<
-    WithdrawalMethod | undefined
-  >(undefined);
+export const WithdrawalSheet = ({ walletId, isDemo, onSuccess }: QuickActionsProps) => {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [showNewMethodForm, setShowNewMethodForm] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [step, setStep] = useState<"amount" | "method">("amount");
+  const [selectedMethod, setSelectedMethod] = useState<WithdrawalMethod | null>(null);
+  const [withdrawalMethods, setWithdrawalMethods] = useState<WithdrawalMethod[]>([]);
   const { toast } = useToast();
-  const [isOpen, setIsOpen] = useState(false);
 
-  // Fetch withdrawal methods
-  useEffect(() => {
-    const fetchWithdrawalMethods = async () => {
+  const resetForm = () => {
+    setAmount("");
+    setStep("amount");
+    setSelectedMethod(null);
+    setShowNewMethodForm(false);
+  };
+
+  const fetchWithdrawalMethods = async () => {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -52,199 +48,215 @@ export const WithdrawalSheet = ({
         .select("*")
         .eq("user_id", user.id);
 
-      if (error) {
-        console.error("Error fetching withdrawal methods:", error);
-        return;
-      }
+      if (error) throw error;
+      if (data) setWithdrawalMethods(data);
+    } catch (error) {
+      console.error("Error fetching withdrawal methods:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load withdrawal methods",
+      });
+    }
+  };
 
-      if (data) {
-        // Convert database records to WithdrawalMethod type
-        const methods: WithdrawalMethod[] = data.map(item => ({
-          id: item.id,
-          user_id: item.user_id,
-          method: item.method,
-          label: item.label,
-          address: item.address,
-          is_default: item.is_default || false,
-          created_at: item.created_at,
-          updated_at: item.updated_at
-        }));
-        
-        setWithdrawalMethods(methods);
-        const defaultMethod = methods.find((m) => m.is_default);
-        if (defaultMethod) {
-          setSelectedMethod(defaultMethod);
-        }
-      }
-    };
-
-    if (isOpen && !isDemo) {
+  useEffect(() => {
+    if (isSheetOpen) {
       fetchWithdrawalMethods();
     }
-  }, [isOpen, isDemo]);
+  }, [isSheetOpen]);
 
-  const handleVirtualWithdrawal = async () => {
-    if (!amount || parseFloat(amount) <= 0) {
+  const handleWithdrawal = async () => {
+    if (!selectedMethod) {
       toast({
-        title: "Invalid amount",
-        description: "Please enter a valid withdrawal amount",
         variant: "destructive",
+        title: "Error",
+        description: "Please select a withdrawal method",
       });
       return;
     }
 
-    setIsProcessing(true);
+    setIsWithdrawing(true);
+
     try {
-      // Create transaction record
-      const { error: transactionError } = await supabase
-        .from("transactions")
-        .insert({
-          wallet_id: walletId,
-          type: "withdrawal",
-          amount: parseFloat(amount),
-          status: "Completed",
-          name: "Virtual Withdrawal",
-          withdrawal_method: selectedMethod?.method || "bank",
-          withdrawal_address: selectedMethod?.address || "Demo Withdrawal"
+      const parsedAmount = parseFloat(amount);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        throw new Error("Please enter a valid amount");
+      }
+
+      // For demo wallets, just simulate the withdrawal
+      if (isDemo) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        
+        // Insert the transaction record
+        const { error: transactionError } = await supabase
+          .from("transactions")
+          .insert({
+            wallet_id: walletId,
+            type: "withdrawal",
+            amount: parsedAmount,
+            status: "completed",
+            withdrawal_method: selectedMethod.method,
+            withdrawal_address: selectedMethod.address
+          });
+
+        if (transactionError) throw transactionError;
+
+        toast({
+          title: "Withdrawal Successful",
+          description: `$${parsedAmount.toFixed(2)} has been withdrawn from your demo wallet.`,
         });
+      } else {
+        // For real wallets, handle the actual withdrawal process
+        const { error: transactionError } = await supabase
+          .from("transactions")
+          .insert({
+            wallet_id: walletId,
+            type: "withdrawal",
+            amount: parsedAmount,
+            status: "pending", // Real withdrawals start as pending
+            withdrawal_method: selectedMethod.method,
+            withdrawal_address: selectedMethod.address
+          });
 
-      if (transactionError) throw transactionError;
+        if (transactionError) throw transactionError;
 
-      // The wallet balance will be automatically updated by the trigger we created
+        toast({
+          title: "Withdrawal Requested",
+          description: `Your withdrawal request for $${parsedAmount.toFixed(2)} has been submitted and is pending approval.`,
+        });
+      }
 
-      toast({
-        title: "Withdrawal successful",
-        description: `$${amount} has been withdrawn from your wallet`,
-      });
+      // Close the sheet and reset the form
+      setIsSheetOpen(false);
+      resetForm();
       
-      setAmount("");
-      setIsOpen(false);
+      // Trigger success callback to refresh wallet data
       onSuccess();
     } catch (error) {
       console.error("Withdrawal error:", error);
       toast({
-        title: "Withdrawal failed",
-        description: "There was an error processing your withdrawal",
         variant: "destructive",
+        title: "Withdrawal Failed",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
       });
     } finally {
-      setIsProcessing(false);
+      setIsWithdrawing(false);
     }
   };
 
-  const handleWithdrawalMethodAdded = (newMethod: WithdrawalMethod) => {
-    setWithdrawalMethods([...withdrawalMethods, newMethod]);
+  const handleMethodAdded = (newMethod: WithdrawalMethod) => {
+    setWithdrawalMethods((prev) => [...prev, newMethod]);
+    setShowNewMethodForm(false);
     setSelectedMethod(newMethod);
-    setIsAddingMethod(false);
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button
-          className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white border-none"
-          variant="outline"
-        >
-          <ArrowDownToLine className="mr-2" /> Withdraw Funds
-        </Button>
-      </SheetTrigger>
-      <SheetContent className="bg-black border-green-900/20">
+    <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+      <Button
+        onClick={() => setIsSheetOpen(true)}
+        className="flex-1 bg-gradient-to-br from-amber-700 to-amber-900 hover:from-amber-800 hover:to-amber-950 text-white px-4 py-6 rounded-lg shadow-md hover:shadow-lg transition-all"
+      >
+        <div className="flex flex-col items-center justify-center w-full">
+          <ArrowDownToLine className="h-8 w-8 mb-2" />
+          <span className="text-xl">Withdraw</span>
+        </div>
+      </Button>
+
+      <SheetContent className="sm:max-w-md">
         <SheetHeader>
-          <SheetTitle className="text-green-400">Withdraw Funds</SheetTitle>
-          <SheetDescription className="text-green-400/80">
-            Withdraw funds from your wallet to your preferred destination
+          <SheetTitle>Withdraw Funds</SheetTitle>
+          <SheetDescription>
+            {isDemo
+              ? "Withdraw funds from your demo wallet"
+              : "Withdraw funds from your real wallet"}
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6">
-          {isDemo ? (
+        <div className="py-6">
+          {step === "amount" ? (
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="amount" className="text-green-400/80">
-                  Withdrawal Amount (USD)
-                </Label>
+              <div>
+                <Label htmlFor="amount">Withdrawal Amount ($)</Label>
                 <Input
                   id="amount"
                   type="number"
+                  min="1"
+                  step="0.01"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount"
-                  className="bg-green-900/10 border-green-900/20 text-green-400"
+                  placeholder="0.00"
+                  className="text-lg"
                 />
               </div>
+
               <Button
-                onClick={handleVirtualWithdrawal}
-                disabled={isProcessing}
-                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
+                onClick={() => setStep("method")}
+                disabled={!amount || parseFloat(amount) <= 0}
+                className="w-full"
               >
-                {isProcessing ? "Processing..." : "Withdraw from Demo Wallet"}
+                Continue
               </Button>
             </div>
           ) : (
-            <>
-              {isAddingMethod ? (
-                <WithdrawalMethodForm onComplete={handleWithdrawalMethodAdded} />
+            <div className="space-y-4">
+              {showNewMethodForm ? (
+                <WithdrawalMethodForm onComplete={handleMethodAdded} />
               ) : (
                 <>
-                  <div className="space-y-4">
-                    {withdrawalMethods.length > 0 ? (
-                      <>
-                        <WithdrawalMethodList
-                          methods={withdrawalMethods}
-                          selectedMethodId={selectedMethod?.id}
-                          onSelect={setSelectedMethod}
-                        />
-                        <Button
-                          onClick={() => setIsAddingMethod(true)}
-                          variant="outline"
-                          className="w-full border-green-500/50 text-green-400 hover:bg-green-900/20"
-                        >
-                          <Plus className="mr-2 h-4 w-4" /> Add Withdrawal Method
-                        </Button>
-                      </>
-                    ) : (
-                      <div className="text-center py-4">
-                        <p className="text-green-400/80 mb-4">
-                          No withdrawal methods found. Add a method to continue.
-                        </p>
-                        <Button
-                          onClick={() => setIsAddingMethod(true)}
-                          variant="outline"
-                          className="border-green-500/50 text-green-400 hover:bg-green-900/20"
-                        >
-                          <Plus className="mr-2 h-4 w-4" /> Add Withdrawal Method
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                  <WithdrawalMethodList
+                    methods={withdrawalMethods}
+                    selectedMethod={selectedMethod}
+                    onSelect={setSelectedMethod}
+                  />
 
-                  {selectedMethod && (
-                    <div className="space-y-4 pt-4 border-t border-green-900/20">
-                      <div className="space-y-2">
-                        <Label htmlFor="amount" className="text-green-400/80">
-                          Withdrawal Amount (USD)
-                        </Label>
-                        <Input
-                          id="amount"
-                          type="number"
-                          value={amount}
-                          onChange={(e) => setAmount(e.target.value)}
-                          placeholder="Enter amount"
-                          className="bg-green-900/10 border-green-900/20 text-green-400"
-                        />
-                      </div>
-                      <Button
-                        onClick={handleVirtualWithdrawal}
-                        disabled={isProcessing}
-                        className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
-                      >
-                        {isProcessing ? "Processing..." : "Withdraw Funds"}
-                      </Button>
-                    </div>
-                  )}
+                  <div className="flex flex-col space-y-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowNewMethodForm(true)}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add New Method
+                    </Button>
+
+                    <Button
+                      onClick={handleWithdrawal}
+                      disabled={isWithdrawing || !selectedMethod}
+                      className="w-full"
+                    >
+                      {isWithdrawing ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>Withdraw ${parseFloat(amount).toFixed(2)}</>
+                      )}
+                    </Button>
+                  </div>
                 </>
               )}
-            </>
+
+              {!showNewMethodForm && (
+                <Button
+                  variant="ghost"
+                  onClick={() => setStep("amount")}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Amount
+                </Button>
+              )}
+
+              {showNewMethodForm && (
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowNewMethodForm(false)}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Methods
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </SheetContent>
